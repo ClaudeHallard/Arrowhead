@@ -5,6 +5,43 @@
   </packageImport>
   <packagedElement xmi:type="uml:StateMachine" xmi:id="_lX4GsFrOEeykDs0sggZmCw" name="Service Registry">
     <region xmi:type="uml:Region" xmi:id="_lYxekFrOEeykDs0sggZmCw" name="Region1">
+      <ownedComment xmi:type="uml:Comment" xmi:id="_EaEyIFw9EeyKwq31YgusbQ">
+        <body>Turn on/startUp&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_CdVjMFw-EeyKwq31YgusbQ">
+        <body>Turn off/shutDown&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_KkkwEFw-EeyKwq31YgusbQ">
+        <body>Starts Listener&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_RbgysFw-EeyKwq31YgusbQ">
+        <body>Continues to listen&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_Vz3TAFw-EeyKwq31YgusbQ">
+        <body>HTTP request arrived&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_fTJ38Fw-EeyKwq31YgusbQ">
+        <body>Interpret request&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_jXyLAFw-EeyKwq31YgusbQ">
+        <body>Payload OK</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_l5xmoFw-EeyKwq31YgusbQ">
+        <body>Bad Payload</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_pGT0EFw-EeyKwq31YgusbQ">
+        <body>Fetch information&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_sp9hAFw-EeyKwq31YgusbQ">
+        <body>Interpret response</body>
+      </ownedComment>
       <transition xmi:type="uml:Transition" xmi:id="_gk84UFrQEeykDs0sggZmCw" source="_y-lM8FrOEeykDs0sggZmCw" target="_612EIFrOEeykDs0sggZmCw"/>
       <transition xmi:type="uml:Transition" xmi:id="_1jqG4FrQEeykDs0sggZmCw" source="_612EIFrOEeykDs0sggZmCw" target="_8gqAIFrOEeykDs0sggZmCw"/>
       <transition xmi:type="uml:Transition" xmi:id="_9pEO4FtsEeyOlsdyiqxZZQ" source="_8gqAIFrOEeykDs0sggZmCw" target="_86ZV0FrOEeykDs0sggZmCw"/>
@@ -13,6 +50,12 @@
       <transition xmi:type="uml:Transition" xmi:id="_IqQrcFttEeyOlsdyiqxZZQ" source="_-oku4FrOEeykDs0sggZmCw" target="_-3Nn0FrOEeykDs0sggZmCw"/>
       <transition xmi:type="uml:Transition" xmi:id="_J0rQIFttEeyOlsdyiqxZZQ" source="_-3Nn0FrOEeykDs0sggZmCw" target="__S3pEFrOEeykDs0sggZmCw"/>
       <transition xmi:type="uml:Transition" xmi:id="_MZ5l8FttEeyOlsdyiqxZZQ" source="__S3pEFrOEeykDs0sggZmCw" target="_Auw_UFrPEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_RHc5IFw8EeyKwq31YgusbQ" source="_9QdFYFrOEeykDs0sggZmCw" target="_OI3oIFw8EeyKwq31YgusbQ"/>
+      <transition xmi:type="uml:Transition" xmi:id="_a5_KMFw8EeyKwq31YgusbQ" source="_WQEYwFw8EeyKwq31YgusbQ" target="_9t6dcFrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_kwYAgFw8EeyKwq31YgusbQ" source="_Auw_UFrPEeykDs0sggZmCw" target="_ejyicFw8EeyKwq31YgusbQ"/>
+      <transition xmi:type="uml:Transition" xmi:id="_5AqC0Fw8EeyKwq31YgusbQ" source="_-oku4FrOEeykDs0sggZmCw" target="_Auw_UFrPEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_L3AdwFw9EeyKwq31YgusbQ" source="_9QdFYFrOEeykDs0sggZmCw" target="_86ZV0FrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_dbYTcFw9EeyKwq31YgusbQ" source="_86ZV0FrOEeykDs0sggZmCw" target="_612EIFrOEeykDs0sggZmCw"/>
       <subvertex xmi:type="uml:Pseudostate" xmi:id="_y-lM8FrOEeykDs0sggZmCw" name="INIT"/>
       <subvertex xmi:type="uml:State" xmi:id="_612EIFrOEeykDs0sggZmCw" name="Off"/>
       <subvertex xmi:type="uml:State" xmi:id="_8gqAIFrOEeykDs0sggZmCw" name="Bootstage"/>
@@ -23,16 +66,21 @@
       <subvertex xmi:type="uml:State" xmi:id="_-3Nn0FrOEeykDs0sggZmCw" name="Handle_request"/>
       <subvertex xmi:type="uml:State" xmi:id="__S3pEFrOEeykDs0sggZmCw" name="waiting_for_database_stage"/>
       <subvertex xmi:type="uml:State" xmi:id="_Auw_UFrPEeykDs0sggZmCw" name="format_response_stage"/>
+      <subvertex xmi:type="uml:FinalState" xmi:id="_OI3oIFw8EeyKwq31YgusbQ" name="Payload OK"/>
+      <subvertex xmi:type="uml:Pseudostate" xmi:id="_WQEYwFw8EeyKwq31YgusbQ" name="Payload"/>
+      <subvertex xmi:type="uml:FinalState" xmi:id="_ejyicFw8EeyKwq31YgusbQ" name="Encode Response"/>
     </region>
   </packagedElement>
-  <packagedElement xmi:type="uml:Activity" xmi:id="_lY6ogFrOEeykDs0sggZmCw" name="Service Provider Activity" group="_84t9wFtxEeyOlsdyiqxZZQ _B85CQFtyEeyOlsdyiqxZZQ _Fp6toFtyEeyOlsdyiqxZZQ _Giq6kFtyEeyOlsdyiqxZZQ _HBgysFtyEeyOlsdyiqxZZQ _benwEFtyEeyOlsdyiqxZZQ _b2KtYFtyEeyOlsdyiqxZZQ">
-    <group xmi:type="uml:ActivityPartition" xmi:id="_84t9wFtxEeyOlsdyiqxZZQ" name="Echo service register"/>
-    <group xmi:type="uml:ActivityPartition" xmi:id="_B85CQFtyEeyOlsdyiqxZZQ" name="echo?"/>
-    <group xmi:type="uml:ActivityPartition" xmi:id="_Fp6toFtyEeyOlsdyiqxZZQ" name="Echo OK"/>
-    <group xmi:type="uml:ActivityPartition" xmi:id="_Giq6kFtyEeyOlsdyiqxZZQ" name="Payload OK?"/>
-    <group xmi:type="uml:ActivityPartition" xmi:id="_HBgysFtyEeyOlsdyiqxZZQ" name="Register/Unregister/Echo Service"/>
-    <group xmi:type="uml:ActivityPartition" xmi:id="_benwEFtyEeyOlsdyiqxZZQ" name="Message Result"/>
-    <group xmi:type="uml:ActivityPartition" xmi:id="_b2KtYFtyEeyOlsdyiqxZZQ" name="Service Registered/Unregistered"/>
+  <packagedElement xmi:type="uml:Activity" xmi:id="_lY6ogFrOEeykDs0sggZmCw" name="Service Provider Activity" node="_pX9IQFw_EeyKwq31YgusbQ _azRW0Fw_EeyKwq31YgusbQ _U7GCgFw_EeyKwq31YgusbQ _eDkNcFxAEeyKwq31YgusbQ _ggpT4FxAEeyKwq31YgusbQ _i5gBoFxAEeyKwq31YgusbQ">
+    <edge xmi:type="uml:ControlFlow" xmi:id="_qM2TcFxAEeyKwq31YgusbQ" target="_i5gBoFxAEeyKwq31YgusbQ" source="_pX9IQFw_EeyKwq31YgusbQ"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_EZGk8FxBEeyKwq31YgusbQ" name="Yes" target="_U7GCgFw_EeyKwq31YgusbQ" source="_i5gBoFxAEeyKwq31YgusbQ"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_HlYTsFxBEeyKwq31YgusbQ" name="No" target="_azRW0Fw_EeyKwq31YgusbQ" source="_i5gBoFxAEeyKwq31YgusbQ"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_U7GCgFw_EeyKwq31YgusbQ" name="Register/Unregister service" incoming="_EZGk8FxBEeyKwq31YgusbQ"/>
+    <node xmi:type="uml:CreateLinkAction" xmi:id="_azRW0Fw_EeyKwq31YgusbQ" name="CreateLinkAction10" incoming="_HlYTsFxBEeyKwq31YgusbQ"/>
+    <node xmi:type="uml:InitialNode" xmi:id="_pX9IQFw_EeyKwq31YgusbQ" name="ServiceProvider" outgoing="_qM2TcFxAEeyKwq31YgusbQ"/>
+    <node xmi:type="uml:DecisionNode" xmi:id="_eDkNcFxAEeyKwq31YgusbQ" name="DecisionNode11"/>
+    <node xmi:type="uml:MergeNode" xmi:id="_ggpT4FxAEeyKwq31YgusbQ" name="MergeNode12"/>
+    <node xmi:type="uml:DecisionNode" xmi:id="_i5gBoFxAEeyKwq31YgusbQ" name="Echo?" incoming="_qM2TcFxAEeyKwq31YgusbQ" outgoing="_EZGk8FxBEeyKwq31YgusbQ _HlYTsFxBEeyKwq31YgusbQ"/>
   </packagedElement>
   <packagedElement xmi:type="uml:Activity" xmi:id="_lZB9QFrOEeykDs0sggZmCw" name="Consumer Activity" group="_7N2h8FtyEeyOlsdyiqxZZQ _7oa-EFtyEeyOlsdyiqxZZQ _786AUFtyEeyOlsdyiqxZZQ _8QiG8FtyEeyOlsdyiqxZZQ _8o91EFtyEeyOlsdyiqxZZQ _9JcE4FtyEeyOlsdyiqxZZQ _9roL8FtyEeyOlsdyiqxZZQ _-CKcoFtyEeyOlsdyiqxZZQ">
     <group xmi:type="uml:ActivityPartition" xmi:id="_7N2h8FtyEeyOlsdyiqxZZQ" name="Echo ServiceRegister"/>
