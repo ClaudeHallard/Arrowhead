@@ -9,14 +9,6 @@
         <body>Turn on/startUp&#xD;
 </body>
       </ownedComment>
-      <ownedComment xmi:type="uml:Comment" xmi:id="_CdVjMFw-EeyKwq31YgusbQ">
-        <body>Turn off/shutDown&#xD;
-</body>
-      </ownedComment>
-      <ownedComment xmi:type="uml:Comment" xmi:id="_KkkwEFw-EeyKwq31YgusbQ">
-        <body>Starts Listener&#xD;
-</body>
-      </ownedComment>
       <ownedComment xmi:type="uml:Comment" xmi:id="_RbgysFw-EeyKwq31YgusbQ">
         <body>Continues to listen&#xD;
 </body>
@@ -41,6 +33,12 @@
       </ownedComment>
       <ownedComment xmi:type="uml:Comment" xmi:id="_sp9hAFw-EeyKwq31YgusbQ">
         <body>Interpret response</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_7Di-0FzEEey0kKnsJzH_eQ">
+        <body>Start Listener </body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_NrACIFzFEey0kKnsJzH_eQ">
+        <body>Turn off/ ShutDown </body>
       </ownedComment>
       <transition xmi:type="uml:Transition" xmi:id="_gk84UFrQEeykDs0sggZmCw" source="_y-lM8FrOEeykDs0sggZmCw" target="_612EIFrOEeykDs0sggZmCw"/>
       <transition xmi:type="uml:Transition" xmi:id="_1jqG4FrQEeykDs0sggZmCw" source="_612EIFrOEeykDs0sggZmCw" target="_8gqAIFrOEeykDs0sggZmCw"/>
