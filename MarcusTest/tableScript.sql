@@ -1,5 +1,5 @@
-CREATE TABLE todos (
-    id integer primary key,
-    title text not null,
-    is_done integer default 0
+CREATE TABLE Services (
+    id          INTEGER   PRIMARY KEY,
+    ServiceName TEXT      NOT NULL,
+    metaData    CHAR (45) DEFAULT 0
 );

@@ -1,4 +1,4 @@
-module todo
+module serviceRegistry
 
 go 1.11
 

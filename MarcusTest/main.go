@@ -16,7 +16,7 @@ func main() {
 
 	n.Use(nano.CORSWithConfig(nano.CORSConfig{AllowedOrigins: []string{"*"}}))
 
-	method := new(Todo)
+	method := new(JsonFile)
 	n.GET("/serviceregistry/echo", method.Echo)
 	n.POST("/serviceregistry/query", method.Query)
 	n.POST("/serviceregistry/register", method.Store)
