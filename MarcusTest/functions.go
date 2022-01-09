@@ -27,9 +27,18 @@ func handleError(message string, err error) {
 
 // Register model.
 type Register struct {
-	ID          uint   `json:"id"`
-	ServiceName string `json:"serviceName"`
-	MetaData    string `json:"metaData"`
+	ID                 uint   `json:"id"`
+	ServiceDefinition  string `json: "serviceDefinition"`
+	SystemName         string `json:"systemName"`
+	Port               string `json: "port"`
+	AuthenticationInfo string `json:"authenticationInfo"`
+	ServiceURI         string `json:"serviceURI"`
+	EndOfvalidity      string `json:"endOfValidity"`
+	Secure             string `json: NOT_SECURE`
+	Address            string `json:"address"`
+	MetaData           string `json:"metaData"`
+	Version            string `json: "version"`
+	Interfaces         string `json:"interfaces"`
 }
 
 // All functions to returns all Service list.
@@ -43,7 +52,7 @@ func (model *Register) All() []Register {
 	for rows.Next() {
 		var Service Register
 
-		err := rows.Scan(&Service.ID, &Service.ServiceName, &Service.MetaData)
+		err := rows.Scan(&Service.ID, &Service.SystemName, &Service.MetaData)
 		handleError("scan failed: %v", err)
 
 		Services = append(Services, Service)
@@ -54,32 +63,31 @@ func (model *Register) All() []Register {
 
 // DATABASE HANDLER
 func (model *Register) Save() *Register {
-	stmt, err := db.Prepare("INSERT INTO Services (ServiceName, metaData) VALUES (?, ?)")
+	stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, SystemName, metaData, Port, authenticationInfo, serviceURI, endOfValidity, secure, address, version, interfaces) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
 	handleError("could prepare statement: %v", err)
-
-	res, err := stmt.Exec(model.ServiceName, model.MetaData)
+	println(model.Port, "hello")
+	println(model.SystemName, "hello2")
+	res, err := stmt.Exec(model.ServiceDefinition, model.SystemName, model.MetaData, model.Port, model.AuthenticationInfo, model.ServiceURI, model.EndOfvalidity, model.Secure, model.Address, model.Version, model.Interfaces)
 	handleError("failed to store: %v", err)
 
 	id, _ := res.LastInsertId()
 	model.ID = uint(id)
-
+	println("store worked")
 	return model
 }
 
 // Find Service by id.
-func (model *Register) Find(id uint) *Register {
-	row := db.QueryRow("SELECT * FROM Services WHERE id = ?", id)
-	println(id)
+func (model *Register) Find(name string) *Register {
+	row := db.QueryRow("SELECT * FROM Services WHERE SystemName = ?", name)
+	println("?", name)
 	Service := &Register{}
-	err := row.Scan(&Service.ID, &Service.ServiceName, &Service.MetaData)
+	err := row.Scan(&Service.SystemName)
 
-	println(&Service.ID)
-	println(Service.ID)
 	if err != nil {
-		// if err == sql.ErrNoRows {
-		// 	println("ERROR with query")
-		// 	return nil
-		// }
+		if err == sql.ErrNoRows {
+			println("ERROR with query")
+			return nil
+		}
 	}
 
 	return Service
@@ -105,16 +113,16 @@ func (model *Register) ToggleDoneStatus() bool {
 
 // Delete is functions to remove Service from database.
 func (model *Register) Delete() bool {
-	stmt, err := db.Prepare("DELETE FROM Services WHERE id = ?")
+	stmt, err := db.Prepare("DELETE  FROM Services WHERE SystemName = ?")
 	handleError("could not prepare statement: %v", err)
 
-	res, err := stmt.Exec(model.ID)
+	res, err := stmt.Exec(model.SystemName)
 	handleError("query failed: %v", err)
 
 	affecteds, err := res.RowsAffected()
 	handleError("could not get affected rows: %v", err)
-
-	if affecteds > 0 {
+	check := affecteds
+	if check > 0 {
 		return true
 	}
 

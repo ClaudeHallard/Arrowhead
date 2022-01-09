@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/hariadivicky/nano"
 )
@@ -23,12 +22,31 @@ func (ctrl *JsonFile) Echo(c *nano.Context) {
 
 // route: POST /register
 func (ctrl *JsonFile) Store(c *nano.Context) {
-	ServiceName := c.PostForm("ServiceName")
+	serviceDefinition := c.PostForm("serviceDefinition")
+	systemName := c.PostForm("systemName")
 	metaData := c.PostForm("metaData")
-	println("store worked")
+	port := c.PostForm("Port")
+	authenticationInfo := c.PostForm("authenticationInfo")
+	serviceURI := c.PostForm("serviceURI")
+	endOfValidity := c.PostForm("endOfValidity")
+	secure := c.PostForm("secure")
+	address := c.PostForm("address")
+	version := c.PostForm("version")
+	interfaces := c.PostForm("interfaces")
+	println(systemName)
+
 	Services := (&Register{
-		ServiceName: ServiceName,
-		MetaData:    metaData,
+		ServiceDefinition:  serviceDefinition,
+		SystemName:         systemName,
+		MetaData:           metaData,
+		Port:               port,
+		AuthenticationInfo: authenticationInfo,
+		ServiceURI:         serviceURI,
+		EndOfvalidity:      endOfValidity,
+		Secure:             secure,
+		Address:            address,
+		Version:            version,
+		Interfaces:         interfaces,
 	}).Save()
 
 	c.JSON(http.StatusOK, nano.H{
@@ -50,10 +68,10 @@ func (ctrl *JsonFile) Query(c *nano.Context) {
 // Unregister is functions to delete service from database.
 
 func (ctrl *JsonFile) Unregister(c *nano.Context) {
-	id, _ := strconv.ParseUint(c.Param("ID"), 10, 8)
+	name := c.PostForm("systemName")
 	model := new(Register)
-	println("controller", id)
-	service := model.Find(uint(id))
+	println("controller", name)
+	service := model.Find(name)
 
 	// send http not found when asset does not exists.
 	if service == nil {
