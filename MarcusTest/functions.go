@@ -41,7 +41,7 @@ type Register struct {
 	Interfaces         string `json:"interfaces"`
 }
 
-// All functions to returns all Service list.
+// function to return the specific service
 func (model *Register) Query(name string) []Register {
 	rows, err := db.Query("SELECT * FROM Services WHERE systemName = ?", name)
 	handleError("query failed: %v", err)
@@ -61,7 +61,7 @@ func (model *Register) Query(name string) []Register {
 	return Services
 }
 
-// DATABASE HANDLER
+// function to store the register input
 func (model *Register) Save() *Register {
 	stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, SystemName, metaData, Port, authenticationInfo, serviceURI, endOfValidity, secure, address, version, interfaces) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
 	handleError("could prepare statement: %v", err)
@@ -75,7 +75,7 @@ func (model *Register) Save() *Register {
 	return model
 }
 
-// Find Service by id.
+// function to find Service.
 func (model *Register) Find(name string) *Register {
 	row := db.QueryRow("SELECT * FROM Services WHERE SystemName = ?", name)
 
@@ -92,7 +92,7 @@ func (model *Register) Find(name string) *Register {
 	return Service
 }
 
-// Delete is functions to remove Service from database.
+// function to delete service from database.
 func (model *Register) Delete(name string) bool {
 	stmt, err := db.Prepare("DELETE FROM Services WHERE SystemName = ?")
 	handleError("could not prepare statement: %v", err)

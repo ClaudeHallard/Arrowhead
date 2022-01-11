@@ -8,8 +8,7 @@ import (
 
 type JsonFile struct{}
 
-// Echo return an OK if the server is running
-// route: GET /echo
+// ECHO return an OK if the server is running
 func (ctrl *JsonFile) Echo(c *nano.Context) {
 	ok_mess := "OK"
 	println("echo worked")
@@ -20,7 +19,7 @@ func (ctrl *JsonFile) Echo(c *nano.Context) {
 
 }
 
-// route: POST /register
+// route: POST serviceregistry/register
 func (ctrl *JsonFile) Store(c *nano.Context) {
 	serviceDefinition := c.PostForm("serviceDefinition")
 	systemName := c.PostForm("systemName")
@@ -54,14 +53,12 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 
 }
 
-// query stuff from database.
-// route: POST /query
+// route: POST serviceregistry/query
 func (ctrl *JsonFile) Query(c *nano.Context) {
 	name := c.PostForm("systemName")
 	model := new(Register)
 	service := model.Find(name)
 
-	// send http not found when asset does not exists.
 	if service == nil {
 		c.String(http.StatusNotFound, "query you are looking for does not exist!")
 		return
@@ -74,14 +71,11 @@ func (ctrl *JsonFile) Query(c *nano.Context) {
 	println("query worked")
 }
 
-// Unregister is functions to delete service from database.
+// route: DELETE serviceregistry/unregister
 func (ctrl *JsonFile) Unregister(c *nano.Context) {
 	name := c.PostForm("systemName")
 	model := new(Register)
-
 	service := model.Find(name)
-
-	// send http not found when asset does not exists.
 	if service == nil {
 		c.String(http.StatusNotFound, "query you want to delete does not exist")
 		return
