@@ -42,8 +42,8 @@ type Register struct {
 }
 
 // All functions to returns all Service list.
-func (model *Register) All() []Register {
-	rows, err := db.Query("SELECT * FROM Services")
+func (model *Register) Query(name string) []Register {
+	rows, err := db.Query("SELECT * FROM Services WHERE systemName = ?", name)
 	handleError("query failed: %v", err)
 
 	var Services []Register
@@ -52,7 +52,7 @@ func (model *Register) All() []Register {
 	for rows.Next() {
 		var Service Register
 
-		err := rows.Scan(&Service.ID, &Service.SystemName, &Service.MetaData)
+		err := rows.Scan(&Service.ID, &Service.ServiceDefinition, &Service.SystemName, &Service.Port, &Service.AuthenticationInfo, &Service.ServiceURI, &Service.EndOfvalidity, &Service.Secure, &Service.Address, &Service.MetaData, &Service.Version, &Service.Interfaces)
 		handleError("scan failed: %v", err)
 
 		Services = append(Services, Service)
@@ -65,21 +65,20 @@ func (model *Register) All() []Register {
 func (model *Register) Save() *Register {
 	stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, SystemName, metaData, Port, authenticationInfo, serviceURI, endOfValidity, secure, address, version, interfaces) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
 	handleError("could prepare statement: %v", err)
-	println(model.Port, "hello")
-	println(model.SystemName, "hello2")
+
 	res, err := stmt.Exec(model.ServiceDefinition, model.SystemName, model.MetaData, model.Port, model.AuthenticationInfo, model.ServiceURI, model.EndOfvalidity, model.Secure, model.Address, model.Version, model.Interfaces)
 	handleError("failed to store: %v", err)
 
 	id, _ := res.LastInsertId()
 	model.ID = uint(id)
-	println("store worked")
+
 	return model
 }
 
 // Find Service by id.
 func (model *Register) Find(name string) *Register {
 	row := db.QueryRow("SELECT * FROM Services WHERE SystemName = ?", name)
-	println("?", name)
+
 	Service := &Register{}
 	err := row.Scan(&Service.SystemName)
 
@@ -93,30 +92,11 @@ func (model *Register) Find(name string) *Register {
 	return Service
 }
 
-func (model *Register) ToggleDoneStatus() bool {
-
-	stmt, err := db.Prepare("UPDATE Services SET metaData = ? WHERE id = ?")
-	handleError("could not prepare statement: %v", err)
-
-	res, err := stmt.Exec(model.MetaData, model.ID)
-	handleError("query failed: %v", err)
-
-	affecteds, err := res.RowsAffected()
-	handleError("could not get affected rows: %v", err)
-
-	if affecteds > 0 {
-		return true
-	}
-
-	return false
-}
-
 // Delete is functions to remove Service from database.
-func (model *Register) Delete() bool {
-	stmt, err := db.Prepare("DELETE  FROM Services WHERE SystemName = ?")
+func (model *Register) Delete(name string) bool {
+	stmt, err := db.Prepare("DELETE FROM Services WHERE SystemName = ?")
 	handleError("could not prepare statement: %v", err)
-
-	res, err := stmt.Exec(model.SystemName)
+	res, err := stmt.Exec(name)
 	handleError("query failed: %v", err)
 
 	affecteds, err := res.RowsAffected()
@@ -125,6 +105,5 @@ func (model *Register) Delete() bool {
 	if check > 0 {
 		return true
 	}
-
 	return false
 }

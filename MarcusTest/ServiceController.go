@@ -15,7 +15,7 @@ func (ctrl *JsonFile) Echo(c *nano.Context) {
 	println("echo worked")
 	c.SetHeader("hello ", "OK")
 	c.JSON(http.StatusOK, nano.H{
-		"OK": ok_mess,
+		"Echo": ok_mess,
 	})
 
 }
@@ -33,7 +33,6 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 	address := c.PostForm("address")
 	version := c.PostForm("version")
 	interfaces := c.PostForm("interfaces")
-	println(systemName)
 
 	Services := (&Register{
 		ServiceDefinition:  serviceDefinition,
@@ -48,7 +47,7 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 		Version:            version,
 		Interfaces:         interfaces,
 	}).Save()
-
+	println("register worked")
 	c.JSON(http.StatusOK, nano.H{
 		"Services": Services,
 	})
@@ -58,19 +57,28 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 // query stuff from database.
 // route: POST /query
 func (ctrl *JsonFile) Query(c *nano.Context) {
-	println("query worked")
-	c.SetHeader("query ", "OK")
+	name := c.PostForm("systemName")
+	model := new(Register)
+	service := model.Find(name)
+
+	// send http not found when asset does not exists.
+	if service == nil {
+		c.String(http.StatusNotFound, "query you are looking for does not exist!")
+		return
+	}
+
+	queryList := service.Query(name)
 	c.JSON(http.StatusOK, nano.H{
-		"hellohello": "yet not implemented ",
+		"query": queryList,
 	})
+	println("query worked")
 }
 
 // Unregister is functions to delete service from database.
-
 func (ctrl *JsonFile) Unregister(c *nano.Context) {
 	name := c.PostForm("systemName")
 	model := new(Register)
-	println("controller", name)
+
 	service := model.Find(name)
 
 	// send http not found when asset does not exists.
@@ -79,9 +87,12 @@ func (ctrl *JsonFile) Unregister(c *nano.Context) {
 		return
 	}
 
-	deleted := service.Delete()
+	deleted := service.Delete(name)
+	println("delete worked")
+	if deleted {
+		c.JSON(http.StatusOK, nano.H{
+			"Deleted": "OK",
+		})
+	}
 
-	c.JSON(http.StatusOK, nano.H{
-		"deleted": deleted,
-	})
 }
