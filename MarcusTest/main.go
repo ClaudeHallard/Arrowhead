@@ -22,9 +22,9 @@ func main() {
 	n.POST("/serviceregistry/register", method.Store)
 	n.DELETE("/serviceregistry/unregister", method.Unregister)
 
-	log.Println("server running at port 8080")
+	log.Println("server running at port 4245")
 
-	err := n.Run(":8080")
+	err := n.Run(":4245")
 	if err != nil {
 		log.Fatalf("could not start application: %v", err)
 	}
