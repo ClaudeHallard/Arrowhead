@@ -5,7 +5,7 @@ package main
 //Metadata scruct, used by
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
-type Metadata struct {
+type MetadataOld struct {
 	AdditionalProp1 string `json:"additionalProp1"`
 	AdditionalProp2 string `json:"additionalProp2"`
 	AdditionalProp3 string `json:"additionalProp3"`
@@ -41,11 +41,10 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"NOT_SECURE"`
-	Metadata          Metadata       `json:"metadata"`
+	Metadata          []string       `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
-
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
 	Address            string `json:"adress"`
@@ -57,13 +56,13 @@ type ProviderSystem struct {
 type ServiceRegistryEntryOutput struct {
 	ID                int               `json:"id"`
 	ServiceDefinition ServiceDefinition `json:"serviceDefinition"`
-	Provider          Provider          `json:"id"`
+	Provider          Provider          `json:"provider"`
 	ServiceUri        string            `json:"serviceUri"`
-	EndOfvalidity     string            `json:"endOfValidity"`
+	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"NOT_SECURE"`
-	Metadata          Metadata          `json:"metadata"`
+	Metadata          []string          `json:"metadata"`
 	Version           int               `json:"version"`
-	interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
+	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
 	CreatedAt         string            `json:"createdAt"`
 	UpdatedAt         string            `json:"updatedAt"`
 }
@@ -73,7 +72,7 @@ type ServiceQueryForm struct {
 	ServiceDefinitionRequirement string   `json:"serviceDefinitionRequirement"`
 	InterfaceRequirements        []string `json:"interfaceRequirements"`
 	SecurityReRequirements       []string `json:"securityRequirements"`
-	MetadataRequirements         Metadata `json:"metadataRequirements "`
+	MetadataRequirements         []string `json:"metadataRequirements "`
 	VersionRequirements          int      `json:"versionRequirements"`
 	MaxVersionRequirements       int      `json:"maxVersionRequirements"`
 	MinVersionRRequirements      int      `json:"minVersionRRequirements"`
@@ -84,4 +83,18 @@ type ServiceQueryForm struct {
 type ServiceQueryList struct {
 	ServiceQueryData []ServiceRegistryEntryOutput `json:"serviceQueryData"`
 	UnfilteredHits   int                          `json:"unfilteredHits"`
+}
+
+type unRegister struct {
+	ServiceDefinition string `json:"serviceDefinition"`
+	SystemName        string `json:"systemName"`
+	Address           string `json:"address"`
+	Port              string `json:"port"`
+}
+
+type ServiceUnregisterEntryInput struct {
+	ServiceDefinition string `json:"serviceDefinition"`
+	SystemName        string `json:"systemName"`
+	Address           string `json:"address"`
+	Port              int    `json:"port"`
 }

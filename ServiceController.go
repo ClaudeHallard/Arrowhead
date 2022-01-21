@@ -12,7 +12,7 @@ type JsonFile struct{}
 func (ctrl *JsonFile) Echo(c *nano.Context) {
 	ok_mess := "OK"
 	println("echo worked")
-	c.SetHeader("hello ", "OK")
+	c.SetHeader("Echo ", "OK")
 	c.JSON(http.StatusOK, nano.H{
 		"Echo": ok_mess,
 	})
@@ -34,25 +34,20 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 
 // route: POST serviceregistry/query
 func (ctrl *JsonFile) Query(c *nano.Context) {
-	name := c.PostForm("systemName")
-	model := new(Register)
-	service := model.Find(name)
 
-	if service == nil {
-		c.String(http.StatusNotFound, "query you are looking for does not exist!")
-		return
-	}
+	serviceQueryForm := ServiceQueryForm{}
+	c.BindJSON(&serviceQueryForm)
 
-	queryList := service.Query(name)
+	serviceQueryList := serviceQueryForm.Query()
 	c.JSON(http.StatusOK, nano.H{
-		"query": queryList,
+		"query": serviceQueryList,
 	})
 	println("query worked")
 }
 
 // route: DELETE serviceregistry/unregister
 func (ctrl *JsonFile) Unregister(c *nano.Context) {
-	name := c.PostForm("systemName")
+	name := c.PostForm("serviceDefinition")
 	model := new(Register)
 	service := model.Find(name)
 	if service == nil {

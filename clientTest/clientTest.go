@@ -10,7 +10,7 @@ import (
 
 func main() {
 	//echoTest() // Test example to send echo call
-	//registerTest() // Test example to register a service
+	registerTest() // Test example to register a service
 	//queryTest()
 	//unregisterTest()
 
