@@ -45,6 +45,7 @@ type ServiceRegistryEntryInput struct {
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
+
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
 	Address            string `json:"adress"`
