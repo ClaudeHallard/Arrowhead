@@ -13,8 +13,10 @@ func main() {
 	//registerTest()
 	//createAndRegister(1)
 	//createAndRegister(2)
-	//createAndRegister(3)
-	queryTest()
+	//createAndRegister(7)
+	//queryTest()
+	//deleteTestTwo(8)
+	populateDB(4)
 
 }
 
@@ -103,23 +105,22 @@ type ServiceQueryList struct {
 	UnfilteredHits   int                          `json:"unfilteredHits"`
 }
 
-func sendPackage(body []byte, path string) {
-	resp, err := http.Post("http://127.0.0.1:4245/serviceregistry/"+path, "application/json", bytes.NewBuffer(body))
-	if err != nil {
+func sendPackage(body []byte, path string, method string) {
+	client := &http.Client{}
+	req, err := http.NewRequest(method, "http://127.0.0.1:4245/serviceregistry/"+path, bytes.NewBuffer(body))
 
+	resp, err := client.Do(req)
+	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
-
-	//Check response code, (201)
-
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Response: ")
+
 		//Failed to read response.
 		panic(err)
 	}
-
+	fmt.Println("Request sent. Method: " + method + "To: /serviceregistry/" + path)
 	//The status is not Created. print the error.
 	fmt.Println("	Respons status: ", resp.Status)
 	//Convert bytes to String and print
@@ -157,10 +158,35 @@ func registerTest() {
 	}
 
 	body, _ := json.Marshal(serviceRegistryEntry)
-	sendPackage(body, "register")
+	sendPackage(body, "register", "POST")
+
+}
+func populateDB(entryAmount int) {
+	for i := 1; i <= entryAmount; i++ {
+		createAndRegister(i)
+	}
+}
+func deleteTest() {
+	unregisterForm := &ServiceRegistryEntryInput{}
+	unregisterForm.ServiceDefinition = "serviceDef7"
+	unregisterForm.ProviderSystem.SystemName = "systemName7"
+	unregisterForm.ProviderSystem.Address = "address7"
+	unregisterForm.ProviderSystem.Port = 7
+	body, _ := json.Marshal(unregisterForm)
+	sendPackage(body, "unregister", "DELETE")
 
 }
 
+func deleteTestFast(i int) {
+	unregisterForm := &ServiceRegistryEntryInput{}
+	unregisterForm.ServiceDefinition = "serviceDef" + strconv.Itoa(i)
+	unregisterForm.ProviderSystem.SystemName = "systemName" + strconv.Itoa(i)
+	unregisterForm.ProviderSystem.Address = "address" + strconv.Itoa(i)
+	unregisterForm.ProviderSystem.Port = i
+	body, _ := json.Marshal(unregisterForm)
+	sendPackage(body, "unregister", "DELETE")
+
+}
 func createAndRegister(i int) {
 
 	serviceRegistryEntry := &ServiceRegistryEntryInput{
@@ -190,7 +216,7 @@ func createAndRegister(i int) {
 		},
 	}
 	body, _ := json.Marshal(serviceRegistryEntry)
-	sendPackage(body, "register")
+	sendPackage(body, "register", "POST")
 
 }
 func queryTest() {
@@ -205,6 +231,6 @@ func queryTest() {
 		PingProviders:                false,
 	}
 	body, _ := json.Marshal(serviceQueryForm)
-	sendPackage(body, "query")
+	sendPackage(body, "query", "POST")
 
 }
