@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	OpenDatabase("file:registryDB.db?cache=private")
+	//OpenDatabase("file:registryDB.db?cache=private")
+	OpenDatabase("file:registryDB.db?cache=private&_foreign_keys=on")
 
 	n := nano.New()
 
