@@ -84,17 +84,3 @@ type ServiceQueryList struct {
 	ServiceQueryData []ServiceRegistryEntryOutput `json:"serviceQueryData"`
 	UnfilteredHits   int                          `json:"unfilteredHits"`
 }
-
-type unRegister struct {
-	ServiceDefinition string `json:"serviceDefinition"`
-	SystemName        string `json:"systemName"`
-	Address           string `json:"address"`
-	Port              string `json:"port"`
-}
-
-type ServiceUnregisterEntryInput struct {
-	ServiceDefinition string `json:"serviceDefinition"`
-	SystemName        string `json:"systemName"`
-	Address           string `json:"address"`
-	Port              int    `json:"port"`
-}

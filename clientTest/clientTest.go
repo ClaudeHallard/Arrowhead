@@ -6,24 +6,31 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func main() {
-	//echoTest() // Test example to send echo call
-	registerTest() // Test example to register a service
+	//registerTest()
+	//createAndRegister(1)
+	//createAndRegister(2)
+	//createAndRegister(7)
 	//queryTest()
-	//unregisterTest()
+	//deleteTestTwo(8)
+	populateDB(4)
 
 }
 
-//createAndRegister(1)
-//createAndRegister(2)
-//createAndRegister(3)
-
 //Shared Structs
+
 //Metadata scruct, used by
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
+type MetadataOld struct {
+	AdditionalProp1 string `json:"additionalProp1"`
+	AdditionalProp2 string `json:"additionalProp2"`
+	AdditionalProp3 string `json:"additionalProp3"`
+}
+
 type ServiceDefinition struct {
 	ID                int    `json:"id"`
 	ServiceDefinition string `json:"serviceDefinition"`
@@ -65,13 +72,6 @@ type ProviderSystem struct {
 	AuthenticationInfo string `json:"authenticationInfo"`
 }
 
-type ServiceUnregisterEntryInput struct {
-	ServiceDefinition string `json:"serviceDefinition"`
-	SystemName        string `json:"systemName"`
-	Address           string `json:"address"`
-	Port              int    `json:"port"`
-}
-
 // ServiceRegistryEntry Output Version
 type ServiceRegistryEntryOutput struct {
 	ID                int               `json:"id"`
@@ -105,24 +105,22 @@ type ServiceQueryList struct {
 	UnfilteredHits   int                          `json:"unfilteredHits"`
 }
 
-// Package Handler for the POST method
-func sendPackage(body []byte, path string) {
-	resp, err := http.Post("http://127.0.0.1:4245/serviceregistry/"+path, "application/json", bytes.NewBuffer(body))
-	if err != nil {
+func sendPackage(body []byte, path string, method string) {
+	client := &http.Client{}
+	req, err := http.NewRequest(method, "http://127.0.0.1:4245/serviceregistry/"+path, bytes.NewBuffer(body))
 
+	resp, err := client.Do(req)
+	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
-
-	//Check response code, (201)
-
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Response: ")
+
 		//Failed to read response.
 		panic(err)
 	}
-
+	fmt.Println("Request sent. Method: " + method + "To: /serviceregistry/" + path)
 	//The status is not Created. print the error.
 	fmt.Println("	Respons status: ", resp.Status)
 	//Convert bytes to String and print
@@ -131,53 +129,99 @@ func sendPackage(body []byte, path string) {
 
 }
 
-// example function to test the echo request
-func echoTest() {
-	resp, err := http.Get("http://127.0.0.1:4245/serviceregistry/echo")
-	if err != nil {
-		println("Echo did not work")
-		panic(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	println(string(body))
-}
-
-// example structure on how to register a service into the serviceRegistry
 func registerTest() {
-
 	serviceRegistryEntry := &ServiceRegistryEntryInput{
-		ServiceDefinition: "Temperature",
+		ServiceDefinition: "aa",
 		ProviderSystem: ProviderSystem{
-			SystemName:         "TempProviderLTU",
-			Address:            "127.0.0.1",
-			Port:               9999,
-			AuthenticationInfo: "NOT_USED",
+			SystemName:         "bb",
+			Address:            "cc",
+			Port:               222,
+			AuthenticationInfo: "dd",
 		},
-		ServiceUri:    "http://127.0.0.1:9999/TempProviderLTU/Temperature",
-		EndOfvalidity: "2022-01-25 15:04:05",
-		Secure:        "NOT_SECURE", // tokens not used
+		ServiceUri:    "ee",
+		EndOfvalidity: "ff",
+		Secure:        "gg",
 		Metadata: []string{
-			"Celsius",
-			"Kelvin",
-			"Fahrenheit",
+			"metadata1",
+			"metadata2",
+			"metadata3",
+			"metadata4",
 		},
 
-		Version: 1,
+		Version: 33,
 		Interfaces: []string{
-			"JSON",
-			"HTTP-SECURE-JSON",
+			"Interface1",
+			"Interface2",
+			"Interface3",
+			"Interface4",
 		},
 	}
 
 	body, _ := json.Marshal(serviceRegistryEntry)
-	sendPackage(body, "register")
+	sendPackage(body, "register", "POST")
+
+}
+func populateDB(entryAmount int) {
+	for i := 1; i <= entryAmount; i++ {
+		createAndRegister(i)
+	}
+}
+func deleteTest() {
+	unregisterForm := &ServiceRegistryEntryInput{}
+	unregisterForm.ServiceDefinition = "serviceDef7"
+	unregisterForm.ProviderSystem.SystemName = "systemName7"
+	unregisterForm.ProviderSystem.Address = "address7"
+	unregisterForm.ProviderSystem.Port = 7
+	body, _ := json.Marshal(unregisterForm)
+	sendPackage(body, "unregister", "DELETE")
 
 }
 
+func deleteTestFast(i int) {
+	unregisterForm := &ServiceRegistryEntryInput{}
+	unregisterForm.ServiceDefinition = "serviceDef" + strconv.Itoa(i)
+	unregisterForm.ProviderSystem.SystemName = "systemName" + strconv.Itoa(i)
+	unregisterForm.ProviderSystem.Address = "address" + strconv.Itoa(i)
+	unregisterForm.ProviderSystem.Port = i
+	body, _ := json.Marshal(unregisterForm)
+	sendPackage(body, "unregister", "DELETE")
+
+}
+func createAndRegister(i int) {
+
+	serviceRegistryEntry := &ServiceRegistryEntryInput{
+		ServiceDefinition: "serviceDef" + strconv.Itoa(i),
+		ProviderSystem: ProviderSystem{
+			SystemName:         "systemName" + strconv.Itoa(i),
+			Address:            "address" + strconv.Itoa(i),
+			Port:               i,
+			AuthenticationInfo: "authInfo" + strconv.Itoa(i),
+		},
+		ServiceUri:    "serviceUri" + strconv.Itoa(i),
+		EndOfvalidity: "endofValidity" + strconv.Itoa(i),
+		Secure:        "NOT_SECURE",
+		Metadata: []string{
+			strconv.Itoa(i) + "metadataA",
+			strconv.Itoa(i) + "metadataB",
+			strconv.Itoa(i) + "metadataC",
+			strconv.Itoa(i) + "metadataD",
+		},
+
+		Version: i,
+		Interfaces: []string{
+			strconv.Itoa(i) + "InterfaceA",
+			strconv.Itoa(i) + "InterfaceB",
+			strconv.Itoa(i) + "InterfaceC",
+			strconv.Itoa(i) + "InterfaceD",
+		},
+	}
+	body, _ := json.Marshal(serviceRegistryEntry)
+	sendPackage(body, "register", "POST")
+
+}
 func queryTest() {
 	serviceQueryForm := ServiceQueryForm{
-		ServiceDefinitionRequirement: "Temperature",
+		ServiceDefinitionRequirement: "serviceDef1",
 		InterfaceRequirements:        []string{},
 		SecurityReRequirements:       []string{},
 		MetadataRequirements:         []string{},
@@ -187,43 +231,6 @@ func queryTest() {
 		PingProviders:                false,
 	}
 	body, _ := json.Marshal(serviceQueryForm)
-	sendPackage(body, "query")
+	sendPackage(body, "query", "POST")
 
 }
-
-func unregisterTest() {
-
-	println("test")
-}
-
-// func createAndRegister(i int) {
-// 	serviceRegistryEntry := &ServiceRegistryEntryInput{
-// 		ServiceDefinition: "serviceDef" + strconv.Itoa(i),
-// 		ProviderSystem: ProviderSystem{
-// 			SystemName:         "systemName" + strconv.Itoa(i),
-// 			Address:            "address" + strconv.Itoa(i),
-// 			Port:               i,
-// 			AuthenticationInfo: "authInfo" + strconv.Itoa(i),
-// 		},
-// 		ServiceUri:    "serviceUri" + strconv.Itoa(i),
-// 		EndOfvalidity: "endofValidity" + strconv.Itoa(i),
-// 		Secure:        "NOT_SECURE",
-// 		Metadata: []string{
-// 			strconv.Itoa(i) + "metadataA",
-// 			strconv.Itoa(i) + "metadataB",
-// 			strconv.Itoa(i) + "metadataC",
-// 			strconv.Itoa(i) + "metadataD",
-// 		},
-
-// 		Version: i,
-// 		Interfaces: []string{
-// 			strconv.Itoa(i) + "InterfaceA",
-// 			strconv.Itoa(i) + "InterfaceB",
-// 			strconv.Itoa(i) + "InterfaceC",
-// 			strconv.Itoa(i) + "InterfaceD",
-// 		},
-// 	}
-// 	body, _ := json.Marshal(serviceRegistryEntry)
-// 	sendPackage(body, "register")
-
-// }
