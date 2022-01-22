@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	//echoTest()
 	//registerTest()
 	//createAndRegister(1)
 	//createAndRegister(2)
@@ -127,6 +128,17 @@ func sendPackage(body []byte, path string, method string) {
 	jsonStr := string(body)
 	fmt.Println("	Response: ", jsonStr)
 
+}
+
+func echoTest() {
+	resp, err := http.Get("http://127.0.0.1:4245/serviceregistry/echo")
+	if err != nil {
+		println("Echo did not work")
+		panic(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	println(string(body))
 }
 
 func registerTest() {
