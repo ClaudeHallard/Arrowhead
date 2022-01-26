@@ -40,7 +40,7 @@ type ServiceRegistryEntryInput struct {
 	ProviderSystem    ProviderSystem `json:"providerSystem"`
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
-	Secure            string         `json:"NOT_SECURE"`
+	Secure            string         `json:"secure"`
 	Metadata          []string       `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
@@ -59,7 +59,7 @@ type ServiceRegistryEntryOutput struct {
 	Provider          Provider          `json:"provider"`
 	ServiceUri        string            `json:"serviceUri"`
 	EndOfValidity     string            `json:"endOfValidity"`
-	Secure            string            `json:"NOT_SECURE"`
+	Secure            string            `json:"secure"`
 	Metadata          []string          `json:"metadata"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)

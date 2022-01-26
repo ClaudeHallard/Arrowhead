@@ -28,7 +28,6 @@ func handleError(message string, err error) {
 
 // Register model.
 
-// function to return the specific service
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	serviceQueryList := &ServiceQueryList{}
 	serviceQueryList.ServiceQueryData = getServiceByID(-1)
