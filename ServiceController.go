@@ -14,9 +14,7 @@ func (ctrl *JsonFile) Echo(c *nano.Context) {
 	println("echo worked")
 	c.SetHeader("hello ", "OK")
 
-	c.JSON(http.StatusOK, nano.H{
-		"Echo": ok_mess,
-	})
+	c.JSON(http.StatusOK, ok_mess)
 
 }
 
@@ -28,9 +26,7 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 	println("Registration recived for: " + serviceRegistryEntry.ServiceDefinition)
 	respForm := serviceRegistryEntry.Save()
 	println("register worked")
-	c.JSON(http.StatusOK, nano.H{
-		"Services": respForm,
-	})
+	c.JSON(http.StatusOK, respForm)
 
 }
 
@@ -41,8 +37,6 @@ func (ctrl *JsonFile) Query(c *nano.Context) {
 	c.BindJSON(&serviceQueryForm)
 
 	respForm := serviceQueryForm.Query()
-	//body, _ := json.Marshal(respForm)
-	//c.JSON(respForm)
 	c.JSON(http.StatusOK, respForm)
 	println("query worked")
 }
@@ -55,13 +49,10 @@ func (ctrl *JsonFile) Unregister(c *nano.Context) {
 	deleted := serviceRegistryEntry.Delete()
 	println("delete worked")
 	if deleted {
-		c.JSON(http.StatusOK, nano.H{
-			"Deleted": "OK",
-		})
+		c.JSON(http.StatusOK, "Deleted: OK")
 	} else {
-		c.JSON(http.StatusNotFound, nano.H{
-			"Deleted": "FAILED",
-		})
+		c.JSON(http.StatusNotFound, "Deleted FAILED")
+
 	}
 
 }

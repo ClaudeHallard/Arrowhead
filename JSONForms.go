@@ -20,7 +20,7 @@ type ServiceDefinition struct {
 type Provider struct {
 	ID                 int    `json:"id"`
 	SystemName         string `json:"systemName"`
-	Address            string `json:"adress"`
+	Address            string `json:"address"`
 	Port               int    `json:"port"`
 	AuthenticationInfo string `json:"authenticationInfo"`
 	CreatedAt          string `json:"createdAt"`
