@@ -47,7 +47,7 @@ type ServiceRegistryEntryInput struct {
 }
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
-	Address            string `json:"adress"`
+	Address            string `json:"address"`
 	Port               int    `json:"port"`
 	AuthenticationInfo string `json:"authenticationInfo"`
 }
@@ -72,10 +72,10 @@ type ServiceQueryForm struct {
 	ServiceDefinitionRequirement string   `json:"serviceDefinitionRequirement"`
 	InterfaceRequirements        []string `json:"interfaceRequirements"`
 	SecurityReRequirements       []string `json:"securityRequirements"`
-	MetadataRequirements         []string `json:"metadataRequirements "`
-	VersionRequirements          int      `json:"versionRequirements"`
-	MaxVersionRequirements       int      `json:"maxVersionRequirements"`
-	MinVersionRRequirements      int      `json:"minVersionRRequirements"`
+	MetadataRequirements         []string `json:"metadataRequirements"`
+	VersionRequirements          int      `json:"versionRequirement"`
+	MaxVersionRequirements       int      `json:"maxVersionRequirement"`
+	MinVersionRequirements       int      `json:"minVersionRequirement"`
 	PingProviders                bool     `json:"pingProviders"`
 }
 
