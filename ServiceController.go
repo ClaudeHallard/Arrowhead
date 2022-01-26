@@ -41,9 +41,9 @@ func (ctrl *JsonFile) Query(c *nano.Context) {
 	c.BindJSON(&serviceQueryForm)
 
 	respForm := serviceQueryForm.Query()
-	c.JSON(http.StatusOK, nano.H{
-		"query": respForm,
-	})
+	//body, _ := json.Marshal(respForm)
+	//c.JSON(respForm)
+	c.JSON(http.StatusOK, respForm)
 	println("query worked")
 }
 
