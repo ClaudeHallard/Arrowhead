@@ -21,20 +21,16 @@ The __unregister__ method
 
 There are other functionalies of the arrowhead framework that is not implemented in this demo of the Service Registry.
 
-## Endpoints
 
-The Service Registry offers three types of endpoints. Client, Management and Private.
+The base URL for the requests: `http://<host>:<port>/serviceregistry` (for this demo the localhost is set to port 4245)
 
-Swagger API documentation is available on: `https://<host>:<port>` <br />
-The base URL for the requests: `http://<host>:<port>/serviceregistry`
-
-### Client endpoint description<br />
+### Service description<br />
 
 | Function | URL subpath | Method | Input | Output |
 | -------- | ----------- | ------ | ----- | ------ |
 | Echo    | /echo       | GET    | -     | OK     |
 | Query   | /query      | POST   | ServiceQueryForm | ServiceQueryList |
-| Register | /register   | POST   | ServiceRegistryEntry | ServiceRegistryEntry |
+| Register | /register   | POST   | ServiceRegistryEntryInput | ServiceRegistryEntryOutput |
 | Unregister | /unregister | DELETE | Address, Port, Service Definition, System Name in query parameters| OK |
 
 
@@ -50,20 +46,21 @@ Returns a confirmation message with the purpose of testing if the Service Regist
 POST /serviceregistry/register
 ```
 
-Registers a service.
+Registers a service from a provider.
 
 __ServiceRegistryEntryInput__ is the input (Go struct with json format)
-```json
+```
 type ServiceRegistryEntryInput struct {
 	ServiceDefinition string         `json:"serviceDefinition"`
 	ProviderSystem    ProviderSystem `json:"providerSystem"`
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
-	Secure            string         `json:"NOT_SECURE"`
-	Metadata          Metadata       `json:"metadata"`
+	Secure            string         `json:"secure"`
+	Metadata          []string       `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
+
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
 	Address            string `json:"adress"`
@@ -71,11 +68,6 @@ type ProviderSystem struct {
 	AuthenticationInfo string `json:"authenticationInfo"`
 }
 
-type Metadata struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
-}
 ```
 ## Input clarifiction:
 | Field | Description | Mandatory |
@@ -83,15 +75,15 @@ type Metadata struct {
 | `serviceDefinition` | Service Definition | yes |
 | `providerSystem` | Provider System | yes |
 | `serviceUri` |  URI of the service | yes |
-| `endOfValidity` | Service is available until this UTC timestamp | yes |
-| `secure` | Security info | yes |
-| `metadata` | Metadata | yes |
-| `version` | Version of the Service | yes |
-| `interfaces` | List of the interfaces the Service supports | yes |
+| `endOfValidity` | TimeStamp, overdue services will be unregistred  | no |
+| `secure` | Security info | no |
+| `metadata` | Metadata | no |
+| `version` | Version of the Service | no |
+| `interfaces` | List of the interfaces the Service supports | no |
 
 Returns a __ServiceRegistryEntryOutput (Go struct with json format)__
 
-```json
+```
 type ServiceRegistryEntryOutput struct {
 	ID                int               `json:"id"`
 	ServiceDefinition ServiceDefinition `json:"serviceDefinition"`
@@ -133,7 +125,7 @@ type Interface struct {
 ## Output clarifiction:
 | Field | Description |
 | ----- | ----------- |
-| `id` | ID of the ServiceRegistryEntry |
+| `id` | ID of the ServiceRegistryEntry (internal for the databse) |
 | `serviceDefinition` | Service Definition |
 | `provider` | Provider System |
 | `serviceUri` |  URI of the Service |
@@ -143,7 +135,7 @@ type Interface struct {
 | `version` | Version of the Service |
 | `interfaces` | List of the interfaces the Service supports |
 | `createdAt` | Creation date of the entry |
-| `updatedAt` | When the entry was last updated |
+| `updatedAt` | When the entry was last updated (often same as creation) |
 
 
 # Query
@@ -151,26 +143,20 @@ type Interface struct {
 POST /serviceregistry/query
 ```
 
-Returns ServiceQueryList 
+Returns ServiceQueryList for the specific service. If no service was found, an error message is sent to the client
 
 
 __ServiceQueryForm__ is the input (Go struct with json format)
-```json
+```
 type ServiceQueryForm struct {
 	ServiceDefinitionRequirement string   `json:"serviceDefinitionRequirement"`
 	InterfaceRequirements        []string `json:"interfaceRequirements"`
 	SecurityReRequirements       []string `json:"securityRequirements"`
-	MetadataRequirements         Metadata `json:"metadataRequirements "`
-	VersionRequirements          int      `json:"versionRequirements"`
-	MaxVersionRequirements       int      `json:"maxVersionRequirements"`
-	MinVersionRRequirements      int      `json:"minVersionRRequirements"`
+	MetadataRequirements         []string `json:"metadataRequirements"`
+	VersionRequirements          int      `json:"versionRequirement"`
+	MaxVersionRequirements       int      `json:"maxVersionRequirement"`
+	MinVersionRequirements       int      `json:"minVersionRequirement"`
 	PingProviders                bool     `json:"pingProviders"`
-}
-
-type Metadata struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
 }
 ```
 ## Input clarifiction:
@@ -187,7 +173,7 @@ type Metadata struct {
 
 
 Returns a __ServiceQueryList (Go struct with json format)__
-```json
+```
 type ServiceQueryList struct {
 	ServiceQueryData []ServiceRegistryEntryOutput `json:"serviceQueryData"`
 	UnfilteredHits   int                          `json:"unfilteredHits"`
@@ -196,13 +182,13 @@ type ServiceQueryList struct {
 type ServiceRegistryEntryOutput struct {
 	ID                int               `json:"id"`
 	ServiceDefinition ServiceDefinition `json:"serviceDefinition"`
-	Provider          Provider          `json:"id"`
+	Provider          Provider          `json:"provider"`
 	ServiceUri        string            `json:"serviceUri"`
-	EndOfvalidity     string            `json:"endOfValidity"`
-	Secure            string            `json:"NOT_SECURE"`
-	Metadata          Metadata          `json:"metadata"`
+	EndOfValidity     string            `json:"endOfValidity"`
+	Secure            string            `json:"secure"`
+	Metadata          []string          `json:"metadata"`
 	Version           int               `json:"version"`
-	interfaces        []Interface       `json:"interfaces"` 
+	Interfaces        []Interface       `json:"interfaces"` 
 	CreatedAt         string            `json:"createdAt"`
 	UpdatedAt         string            `json:"updatedAt"`
 }
@@ -222,12 +208,6 @@ type Provider struct {
 	AuthenticationInfo string `json:"authenticationInfo"`
 	CreatedAt          string `json:"createdAt"`
 	UpdatedAt          string `json:"updatedAt"`
-}
-
-type Metadata struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
 }
 
 type Interface struct {
@@ -263,13 +243,39 @@ DELETE /serviceregistry/unregister
 
 Removes a registered service, returns an OK if service was removed and an Error if failed
 
-Query params:
+__ServiceRegistryEntryInput__ is the input (Go struct with json format)
+```
+type ServiceRegistryEntryInput struct {
+	ServiceDefinition string         `json:"serviceDefinition"`
+	ProviderSystem    ProviderSystem `json:"providerSystem"`
+	ServiceUri        string         `json:"serviceUri"`
+	EndOfvalidity     string         `json:"endOfValidity"`
+	Secure            string         `json:"secure"`
+	Metadata          []string       `json:"metadata"`
+	Version           int            `json:"version"`
+	Interfaces        []string       `json:"interfaces"`
+}
+
+type ProviderSystem struct {
+	SystemName         string `json:"systemName"`
+	Address            string `json:"adress"`
+	Port               int    `json:"port"`
+	AuthenticationInfo string `json:"authenticationInfo"`
+}
+
+```
+## Input clarifiction:
 
 | Field | Description | Mandatory |
 | ----- | ----------- | --------- |
-| `service_definition` | Name of the service to be removed | yes |
-| `system_name` | Name of the Provider | no |
-| `address` | Address of the Provider | no |
-| `port` | Port of the Provider | no |
+| `serviceDefinition` | Service Definition | yes |
+| `providerSystem` | Provider System | yes |
+| `serviceUri` |  URI of the service | no |
+| `endOfValidity` | TimeStamp, overdue services will be unregistred  | no |
+| `secure` | Security info | no |
+| `metadata` | Metadata | no |
+| `version` | Version of the Service | no |
+| `interfaces` | List of the interfaces the Service supports | no |
 
+Note: (inorder to unregistrer a service `serviceDefinition` , `systemName` , `adress` & `port` must be provided and valid)
 
