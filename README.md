@@ -1,14 +1,27 @@
-# Go's implementation of the Arrowhead framework
+## Go's implementation of the Arrowhead framework
 
-## Service Registry
+# Service Registry
 
-##  Overview
+##  __System Overview__
 
-This System provides the database, which stores information related to the currently actively offered Services within the Local Cloud.
-
-
+This System is a small demo version of the Arrowhead Framework 4.4.0's service registry implemented in GOLANG, an SQLite based storage is used for this demo. Design structures and schematics are provided in the UML directory. 
 
 
+This project is a part of the Course D0020E at Luleå University of Technology
+<br>
+
+## Compile and run instructions
+
+### __Windows users:__ run the "```serviceRegistry.exe```"-file or run 
+### and compile with ```go build && ./serviceRegistry``` in the main directory
+<br>
+
+### __MAC/unix users:__ compile and run with ```go run *.go``` in the main directory
+
+<br>
+
+__Note:__ The ```clientTest.go``` file can be used to test and run diagnostics on this serviceRegistry demo, it contains different test methods for all services provided in this demo, it can be compiled with ```go run clientTest.go```
+# 
 ## Service methods Overview
 
 The __echo__ method
