@@ -4,7 +4,7 @@
 
 ##  __System Overview__
 
-This System is a small demo version of the Arrowhead Framework 4.4.0's service registry implemented in GOLANG, an SQLite based storage is used for this demo. Design structures and schematics are provided in the UML directory. 
+This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in GOLANG, an SQLite based storage is used for this demo. Design structures and schematics are provided in the UML directory. 
 
 
 This project is a part of the Course D0020E at Luleå University of Technology
@@ -32,7 +32,7 @@ The __query__ method
 
 The __unregister__ method 
 
-There are other functionalies of the arrowhead framework that is not implemented in this demo of the Service Registry.
+__Note:__  There are other functionalies of the arrowhead framework that is not implemented in this demo of the Service Registry.
 
 
 The base URL for the requests: `http://<host>:<port>/serviceregistry` (for this demo the localhost is set to port 4245)
