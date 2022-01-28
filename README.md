@@ -12,11 +12,11 @@ This project is a part of the Course D0020E at Luleå University of Technology
 
 ## Compile and run instructions
 
-### __Windows users:__ run the "```serviceRegistry.exe```"-file or run 
-### and compile with ```go build && ./serviceRegistry``` in the main directory
+#### __Windows users:__ run the "```serviceRegistry.exe```"-file or run 
+#### and compile with ```go build && ./serviceRegistry``` in the main directory
 <br>
 
-### __MAC/unix users:__ compile and run with ```go run *.go``` in the main directory
+#### __MAC/unix users:__ compile and run with ```go run *.go``` in the main directory
 
 <br>
 
