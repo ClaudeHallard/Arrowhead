@@ -7,7 +7,7 @@
 This System provides the database, which stores information related to the currently actively offered Services within the Local Cloud.
 
 
-<a name="serviceregistry_usecases" />
+
 
 ## Service methods Overview
 
