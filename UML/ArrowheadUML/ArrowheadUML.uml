@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_lXo2IFrOEeykDs0sggZmCw" name="ArrowheadUML">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_lZ9KUFrOEeykDs0sggZmCw">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:StateMachine" xmi:id="_lX4GsFrOEeykDs0sggZmCw" name="Service Registry">
+    <region xmi:type="uml:Region" xmi:id="_lYxekFrOEeykDs0sggZmCw" name="Region1">
+      <ownedComment xmi:type="uml:Comment" xmi:id="_EaEyIFw9EeyKwq31YgusbQ">
+        <body>Turn on/startUp&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_RbgysFw-EeyKwq31YgusbQ">
+        <body>Continues to listen&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_Vz3TAFw-EeyKwq31YgusbQ">
+        <body>HTTP request arrived&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_fTJ38Fw-EeyKwq31YgusbQ">
+        <body>Interpret request&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_jXyLAFw-EeyKwq31YgusbQ">
+        <body>Payload OK</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_l5xmoFw-EeyKwq31YgusbQ">
+        <body>Bad Payload</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_pGT0EFw-EeyKwq31YgusbQ">
+        <body>Fetch information&#xD;
+</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_sp9hAFw-EeyKwq31YgusbQ">
+        <body>Interpret response</body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_7Di-0FzEEey0kKnsJzH_eQ">
+        <body>Start Listener </body>
+      </ownedComment>
+      <ownedComment xmi:type="uml:Comment" xmi:id="_NrACIFzFEey0kKnsJzH_eQ">
+        <body>Turn off/ ShutDown </body>
+      </ownedComment>
+      <transition xmi:type="uml:Transition" xmi:id="_gk84UFrQEeykDs0sggZmCw" source="_y-lM8FrOEeykDs0sggZmCw" target="_612EIFrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_1jqG4FrQEeykDs0sggZmCw" source="_612EIFrOEeykDs0sggZmCw" target="_8gqAIFrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_9pEO4FtsEeyOlsdyiqxZZQ" source="_8gqAIFrOEeykDs0sggZmCw" target="_86ZV0FrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_AtawsFttEeyOlsdyiqxZZQ" source="_86ZV0FrOEeykDs0sggZmCw" target="_9QdFYFrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_HCgqgFttEeyOlsdyiqxZZQ" source="_9t6dcFrOEeykDs0sggZmCw" target="_-oku4FrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_IqQrcFttEeyOlsdyiqxZZQ" source="_-oku4FrOEeykDs0sggZmCw" target="_-3Nn0FrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_J0rQIFttEeyOlsdyiqxZZQ" source="_-3Nn0FrOEeykDs0sggZmCw" target="__S3pEFrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_MZ5l8FttEeyOlsdyiqxZZQ" source="__S3pEFrOEeykDs0sggZmCw" target="_Auw_UFrPEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_RHc5IFw8EeyKwq31YgusbQ" source="_9QdFYFrOEeykDs0sggZmCw" target="_OI3oIFw8EeyKwq31YgusbQ"/>
+      <transition xmi:type="uml:Transition" xmi:id="_a5_KMFw8EeyKwq31YgusbQ" source="_WQEYwFw8EeyKwq31YgusbQ" target="_9t6dcFrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_kwYAgFw8EeyKwq31YgusbQ" source="_Auw_UFrPEeykDs0sggZmCw" target="_ejyicFw8EeyKwq31YgusbQ"/>
+      <transition xmi:type="uml:Transition" xmi:id="_5AqC0Fw8EeyKwq31YgusbQ" source="_-oku4FrOEeykDs0sggZmCw" target="_Auw_UFrPEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_L3AdwFw9EeyKwq31YgusbQ" source="_9QdFYFrOEeykDs0sggZmCw" target="_86ZV0FrOEeykDs0sggZmCw"/>
+      <transition xmi:type="uml:Transition" xmi:id="_dbYTcFw9EeyKwq31YgusbQ" source="_86ZV0FrOEeykDs0sggZmCw" target="_612EIFrOEeykDs0sggZmCw"/>
+      <subvertex xmi:type="uml:Pseudostate" xmi:id="_y-lM8FrOEeykDs0sggZmCw" name="INIT"/>
+      <subvertex xmi:type="uml:State" xmi:id="_612EIFrOEeykDs0sggZmCw" name="Off"/>
+      <subvertex xmi:type="uml:State" xmi:id="_8gqAIFrOEeykDs0sggZmCw" name="Bootstage"/>
+      <subvertex xmi:type="uml:State" xmi:id="_86ZV0FrOEeykDs0sggZmCw" name="HTTP_request_listening"/>
+      <subvertex xmi:type="uml:State" xmi:id="_9QdFYFrOEeykDs0sggZmCw" name="Handle_request"/>
+      <subvertex xmi:type="uml:State" xmi:id="_9t6dcFrOEeykDs0sggZmCw" name="controller_receive_request"/>
+      <subvertex xmi:type="uml:State" xmi:id="_-oku4FrOEeykDs0sggZmCw" name="Decode_request_body"/>
+      <subvertex xmi:type="uml:State" xmi:id="_-3Nn0FrOEeykDs0sggZmCw" name="Handle_request"/>
+      <subvertex xmi:type="uml:State" xmi:id="__S3pEFrOEeykDs0sggZmCw" name="waiting_for_database_stage"/>
+      <subvertex xmi:type="uml:State" xmi:id="_Auw_UFrPEeykDs0sggZmCw" name="Format_response_and_send"/>
+      <subvertex xmi:type="uml:FinalState" xmi:id="_OI3oIFw8EeyKwq31YgusbQ" name="queryForm"/>
+      <subvertex xmi:type="uml:Pseudostate" xmi:id="_WQEYwFw8EeyKwq31YgusbQ" name="QueryForm"/>
+      <subvertex xmi:type="uml:FinalState" xmi:id="_ejyicFw8EeyKwq31YgusbQ" name="Data sent"/>
+    </region>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Activity" xmi:id="_lZB9QFrOEeykDs0sggZmCw" name="Service consumer Activity" node="_w62bkIAmEeym2ffUx6pZjw _yM1A0IAmEeym2ffUx6pZjw _zKWZAIAmEeym2ffUx6pZjw _1Gk1IIAmEeym2ffUx6pZjw _2osvMIAmEeym2ffUx6pZjw _3qzFYIAmEeym2ffUx6pZjw _4pVKMIAmEeym2ffUx6pZjw _5tvNgIAmEeym2ffUx6pZjw _VGVWUIAnEeym2ffUx6pZjw _gSaXwIAoEeym2ffUx6pZjw _8Ji2sIAoEeym2ffUx6pZjw" group="_QbNgcIAmEeym2ffUx6pZjw _S8r-sIAmEeym2ffUx6pZjw _UqNQcIAmEeym2ffUx6pZjw">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_SeK2sIAmEeym2ffUx6pZjw" name="Service consumer Activity" group="_SeK2sYAmEeym2ffUx6pZjw">
+      <group xmi:type="uml:ActivityPartition" xmi:id="_SeK2sYAmEeym2ffUx6pZjw" name="Database"/>
+    </ownedBehavior>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_EmuwUIAnEeym2ffUx6pZjw" inPartition="_S8r-sIAmEeym2ffUx6pZjw" target="_yM1A0IAmEeym2ffUx6pZjw" source="_w62bkIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_GDWfUIAnEeym2ffUx6pZjw" target="_zKWZAIAmEeym2ffUx6pZjw" source="_yM1A0IAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_ImWnkIAnEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw" target="_1Gk1IIAmEeym2ffUx6pZjw" source="_zKWZAIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_LSqc0IAnEeym2ffUx6pZjw" target="_5tvNgIAmEeym2ffUx6pZjw" source="_1Gk1IIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_Wle04IAnEeym2ffUx6pZjw" inPartition="_S8r-sIAmEeym2ffUx6pZjw" target="_VGVWUIAnEeym2ffUx6pZjw" source="_5tvNgIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_840M8IAnEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw" target="_2osvMIAmEeym2ffUx6pZjw" source="_1Gk1IIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_FaprIIAoEeym2ffUx6pZjw" target="_3qzFYIAmEeym2ffUx6pZjw" source="_2osvMIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_MptS0IAoEeym2ffUx6pZjw" target="_4pVKMIAmEeym2ffUx6pZjw" source="_3qzFYIAmEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_ohbAkIAoEeym2ffUx6pZjw" name="yes" target="_5tvNgIAmEeym2ffUx6pZjw" source="_gSaXwIAoEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_BNfRsIApEeym2ffUx6pZjw" name="no" inPartition="_UqNQcIAmEeym2ffUx6pZjw" target="_8Ji2sIAoEeym2ffUx6pZjw" source="_gSaXwIAoEeym2ffUx6pZjw">
+      <ownedComment xmi:type="uml:Comment" xmi:id="_omR18IApEeym2ffUx6pZjw" annotatedElement="_BNfRsIApEeym2ffUx6pZjw">
+        <body>No&#xD;
+</body>
+      </ownedComment>
+    </edge>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_ElDDYIApEeym2ffUx6pZjw" target="_VGVWUIAnEeym2ffUx6pZjw" source="_8Ji2sIAoEeym2ffUx6pZjw"/>
+    <edge xmi:type="uml:ControlFlow" xmi:id="_H6yQIIApEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw" target="_gSaXwIAoEeym2ffUx6pZjw" source="_4pVKMIAmEeym2ffUx6pZjw"/>
+    <group xmi:type="uml:ActivityPartition" xmi:id="_QbNgcIAmEeym2ffUx6pZjw" name="Database" node="_3qzFYIAmEeym2ffUx6pZjw"/>
+    <group xmi:type="uml:ActivityPartition" xmi:id="_S8r-sIAmEeym2ffUx6pZjw" name="Service consumer" node="_w62bkIAmEeym2ffUx6pZjw _yM1A0IAmEeym2ffUx6pZjw _5tvNgIAmEeym2ffUx6pZjw _VGVWUIAnEeym2ffUx6pZjw" edge="_EmuwUIAnEeym2ffUx6pZjw _Wle04IAnEeym2ffUx6pZjw">
+      <ownedComment xmi:type="uml:Comment" xmi:id="_dnXjQIAnEeym2ffUx6pZjw">
+        <body>Echo response&#xD;
+</body>
+      </ownedComment>
+    </group>
+    <group xmi:type="uml:ActivityPartition" xmi:id="_UqNQcIAmEeym2ffUx6pZjw" name="ServiceRegistry" node="_zKWZAIAmEeym2ffUx6pZjw _1Gk1IIAmEeym2ffUx6pZjw _2osvMIAmEeym2ffUx6pZjw _4pVKMIAmEeym2ffUx6pZjw _gSaXwIAoEeym2ffUx6pZjw _8Ji2sIAoEeym2ffUx6pZjw" edge="_ImWnkIAnEeym2ffUx6pZjw _840M8IAnEeym2ffUx6pZjw _BNfRsIApEeym2ffUx6pZjw _H6yQIIApEeym2ffUx6pZjw">
+      <ownedComment xmi:type="uml:Comment" xmi:id="_To5dEIApEeym2ffUx6pZjw">
+        <body>query request&#xD;
+</body>
+      </ownedComment>
+    </group>
+    <node xmi:type="uml:InitialNode" xmi:id="_w62bkIAmEeym2ffUx6pZjw" outgoing="_EmuwUIAnEeym2ffUx6pZjw" inPartition="_S8r-sIAmEeym2ffUx6pZjw">
+      <name xsi:nil="true"/>
+    </node>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_yM1A0IAmEeym2ffUx6pZjw" name="Sends service request" incoming="_EmuwUIAnEeym2ffUx6pZjw" outgoing="_GDWfUIAnEeym2ffUx6pZjw" inPartition="_S8r-sIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_zKWZAIAmEeym2ffUx6pZjw" name="Recived request" incoming="_GDWfUIAnEeym2ffUx6pZjw" outgoing="_ImWnkIAnEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:DecisionNode" xmi:id="_1Gk1IIAmEeym2ffUx6pZjw" name="Determine service" incoming="_ImWnkIAnEeym2ffUx6pZjw" outgoing="_LSqc0IAnEeym2ffUx6pZjw _840M8IAnEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_2osvMIAmEeym2ffUx6pZjw" name="Filter query parameters" incoming="_840M8IAnEeym2ffUx6pZjw" outgoing="_FaprIIAoEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_3qzFYIAmEeym2ffUx6pZjw" name="Query sql request" incoming="_FaprIIAoEeym2ffUx6pZjw" outgoing="_MptS0IAoEeym2ffUx6pZjw" inPartition="_QbNgcIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_4pVKMIAmEeym2ffUx6pZjw" name="Format data response" incoming="_MptS0IAoEeym2ffUx6pZjw" outgoing="_H6yQIIApEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_5tvNgIAmEeym2ffUx6pZjw" name="Recieve response" incoming="_LSqc0IAnEeym2ffUx6pZjw _ohbAkIAoEeym2ffUx6pZjw" outgoing="_Wle04IAnEeym2ffUx6pZjw" inPartition="_S8r-sIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:ActivityFinalNode" xmi:id="_VGVWUIAnEeym2ffUx6pZjw" incoming="_Wle04IAnEeym2ffUx6pZjw _ElDDYIApEeym2ffUx6pZjw" inPartition="_S8r-sIAmEeym2ffUx6pZjw">
+      <name xsi:nil="true"/>
+    </node>
+    <node xmi:type="uml:DecisionNode" xmi:id="_gSaXwIAoEeym2ffUx6pZjw" name="Service exist?" incoming="_H6yQIIApEeym2ffUx6pZjw" outgoing="_ohbAkIAoEeym2ffUx6pZjw _BNfRsIApEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw"/>
+    <node xmi:type="uml:OpaqueAction" xmi:id="_8Ji2sIAoEeym2ffUx6pZjw" name="Send error message" incoming="_BNfRsIApEeym2ffUx6pZjw" outgoing="_ElDDYIApEeym2ffUx6pZjw" inPartition="_UqNQcIAmEeym2ffUx6pZjw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Actor" xmi:id="_b39Z8FtuEeyOlsdyiqxZZQ" name="Consumer"/>
+  <packagedElement xmi:type="uml:Actor" xmi:id="_e0VrgFtuEeyOlsdyiqxZZQ" name="Service Provider"/>
+  <packagedElement xmi:type="uml:Package" xmi:id="_pCDcsFtuEeyOlsdyiqxZZQ" name="Service Registry">
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_rUCtcFtuEeyOlsdyiqxZZQ" name="POST /query"/>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_u9UhQFtuEeyOlsdyiqxZZQ" name="POST /register"/>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_0UcW8FtuEeyOlsdyiqxZZQ" name="DELETE /unregistrer"/>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_ejKKQH9wEeycd-PD-JGeXg" name="GET /echo"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_HgIvwFtvEeyOlsdyiqxZZQ" memberEnd="_HgKk8FtvEeyOlsdyiqxZZQ _HgLMAFtvEeyOlsdyiqxZZQ">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_HgJ94FtvEeyOlsdyiqxZZQ" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_HgJ94VtvEeyOlsdyiqxZZQ" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_HgKk8FtvEeyOlsdyiqxZZQ" name="post /register" type="_rUCtcFtuEeyOlsdyiqxZZQ" association="_HgIvwFtvEeyOlsdyiqxZZQ"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_HgLMAFtvEeyOlsdyiqxZZQ" name="consumer" type="_b39Z8FtuEeyOlsdyiqxZZQ" association="_HgIvwFtvEeyOlsdyiqxZZQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_KQKAUFtvEeyOlsdyiqxZZQ" memberEnd="_KQKnYVtvEeyOlsdyiqxZZQ _KQKnYltvEeyOlsdyiqxZZQ">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_KQKAUVtvEeyOlsdyiqxZZQ" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_KQKnYFtvEeyOlsdyiqxZZQ" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_KQKnYVtvEeyOlsdyiqxZZQ" name="post /query" type="_rUCtcFtuEeyOlsdyiqxZZQ" association="_KQKAUFtvEeyOlsdyiqxZZQ"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_KQKnYltvEeyOlsdyiqxZZQ" name="service provider" type="_e0VrgFtuEeyOlsdyiqxZZQ" association="_KQKAUFtvEeyOlsdyiqxZZQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_K2F-8FtvEeyOlsdyiqxZZQ" memberEnd="_K2HNEltvEeyOlsdyiqxZZQ _K2H0IFtvEeyOlsdyiqxZZQ">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_K2HNEFtvEeyOlsdyiqxZZQ" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_K2HNEVtvEeyOlsdyiqxZZQ" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K2HNEltvEeyOlsdyiqxZZQ" name="post /register" type="_u9UhQFtuEeyOlsdyiqxZZQ" association="_K2F-8FtvEeyOlsdyiqxZZQ"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K2H0IFtvEeyOlsdyiqxZZQ" name="service provider" type="_e0VrgFtuEeyOlsdyiqxZZQ" association="_K2F-8FtvEeyOlsdyiqxZZQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_MHShEFtvEeyOlsdyiqxZZQ" memberEnd="_MHTvMVtvEeyOlsdyiqxZZQ _MHTvMltvEeyOlsdyiqxZZQ">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_MHTIIFtvEeyOlsdyiqxZZQ" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_MHTvMFtvEeyOlsdyiqxZZQ" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_MHTvMVtvEeyOlsdyiqxZZQ" name="delete /unregistrer" type="_0UcW8FtuEeyOlsdyiqxZZQ" association="_MHShEFtvEeyOlsdyiqxZZQ"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_MHTvMltvEeyOlsdyiqxZZQ" name="service provider" type="_e0VrgFtuEeyOlsdyiqxZZQ" association="_MHShEFtvEeyOlsdyiqxZZQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_oLq8oH9wEeycd-PD-JGeXg" memberEnd="_oLrjsX9wEeycd-PD-JGeXg _oLrjsn9wEeycd-PD-JGeXg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_oLq8oX9wEeycd-PD-JGeXg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_oLrjsH9wEeycd-PD-JGeXg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_oLrjsX9wEeycd-PD-JGeXg" name="service provider" type="_e0VrgFtuEeyOlsdyiqxZZQ" association="_oLq8oH9wEeycd-PD-JGeXg"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_oLrjsn9wEeycd-PD-JGeXg" name="get /ehco" type="_ejKKQH9wEeycd-PD-JGeXg" association="_oLq8oH9wEeycd-PD-JGeXg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_rZTWQH9wEeycd-PD-JGeXg" memberEnd="_rZVygH9wEeycd-PD-JGeXg _rZVygX9wEeycd-PD-JGeXg">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_rZVLcH9wEeycd-PD-JGeXg" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_rZVLcX9wEeycd-PD-JGeXg" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_rZVygH9wEeycd-PD-JGeXg" name="consumer" type="_b39Z8FtuEeyOlsdyiqxZZQ" association="_rZTWQH9wEeycd-PD-JGeXg"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_rZVygX9wEeycd-PD-JGeXg" name="get /ehco" type="_ejKKQH9wEeycd-PD-JGeXg" association="_rZTWQH9wEeycd-PD-JGeXg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_SBypgH9yEeycd-PD-JGeXg" name="ClientTest">
+    <packagedElement xmi:type="uml:Class" xmi:id="_M208UH95Eeycd-PD-JGeXg" name="clientTest.go">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_M208UX95Eeycd-PD-JGeXg" name="main"/>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_u0FwMH9yEeycd-PD-JGeXg" name="ServiceRegistry">
+    <packagedElement xmi:type="uml:Component" xmi:id="_u0FwMX9yEeycd-PD-JGeXg" name="Component1"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_5WHIAH9zEeycd-PD-JGeXg" name="main.go">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_9XnOkH9zEeycd-PD-JGeXg" name="main"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_K5_1gH90Eeycd-PD-JGeXg" name="functions.go">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_UbKbAH96Eeycd-PD-JGeXg" name="Property10"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_K5_1gX90Eeycd-PD-JGeXg" name="main"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_RWpv4H90Eeycd-PD-JGeXg" name="OpenDatabase">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_w3mb4H95Eeycd-PD-JGeXg" name="dsn String"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_WvuGUH90Eeycd-PD-JGeXg" name="Query" isQuery="true">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_geZDsH93Eeycd-PD-JGeXg" name="ServiceQueryForm" isOrdered="true" isUnique="false"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_Yd77oH90Eeycd-PD-JGeXg" name="Save">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_FZ67UH94Eeycd-PD-JGeXg" name="ServiceRegistryEntryInput" isUnique="false"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_ZtwkwH90Eeycd-PD-JGeXg" name="Delete">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_ZaFeAH94Eeycd-PD-JGeXg" name="ServiceRegistryEntryInput"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_d1dZ8H90Eeycd-PD-JGeXg" name="serviceDefinitionFilter">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_d1IF8H94Eeycd-PD-JGeXg" name="id int64"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_f7YkoH90Eeycd-PD-JGeXg" name="getServiceByID">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_p4qwUH94Eeycd-PD-JGeXg" name="id int64"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_jYC4wH90Eeycd-PD-JGeXg" name="getInterfaceByID">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_tuVaUH94Eeycd-PD-JGeXg" name="id int64"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_liXbQH90Eeycd-PD-JGeXg" name="getMetadataByID">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_xBcw4H94Eeycd-PD-JGeXg" name="id int64"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_qOH_wH90Eeycd-PD-JGeXg" name="JSONForms">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_L6Wp0H91Eeycd-PD-JGeXg" name="ServiceDefinition" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_VG0ZYH91Eeycd-PD-JGeXg" name="Provider" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_VOV9sH91Eeycd-PD-JGeXg" name="Interface" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_VTj04H91Eeycd-PD-JGeXg" name="ServiceRegistryEntryInput" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_VZT3kH91Eeycd-PD-JGeXg" name="ServiceRegistryEntryOutput" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_jibHUH91Eeycd-PD-JGeXg" name="ServiceQueryForm" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_mx5UAH91Eeycd-PD-JGeXg" name="ServiceQueryList" visibility="public"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_qOH_wX90Eeycd-PD-JGeXg" name="main"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_1zY9QH91Eeycd-PD-JGeXg" name="ServiceController">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_LUtJoH92Eeycd-PD-JGeXg" name="JsonFile" visibility="public"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_1zY9QX91Eeycd-PD-JGeXg" name="main"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_8lDeUH91Eeycd-PD-JGeXg" name="Echo">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_CGg0YH95Eeycd-PD-JGeXg" name="JsonFile" isUnique="false"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_8zs-UH91Eeycd-PD-JGeXg" name="Store">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_FCmyEH95Eeycd-PD-JGeXg" name="JsonFile"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_9DxaoH91Eeycd-PD-JGeXg" name="Query">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_GpgecH95Eeycd-PD-JGeXg" name="JsonFile"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_9VmKcH91Eeycd-PD-JGeXg" name="Unregister">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_I0TiEH95Eeycd-PD-JGeXg" name="JsonFile"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_a-hXIH92Eeycd-PD-JGeXg" client="_5WHIAH9zEeycd-PD-JGeXg" supplier="_1zY9QH91Eeycd-PD-JGeXg"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_dE9fMH92Eeycd-PD-JGeXg" client="_5WHIAH9zEeycd-PD-JGeXg" supplier="_K5_1gH90Eeycd-PD-JGeXg"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_eNhpwH92Eeycd-PD-JGeXg" client="_1zY9QH91Eeycd-PD-JGeXg" supplier="_K5_1gH90Eeycd-PD-JGeXg"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_kC7W4H92Eeycd-PD-JGeXg" client="_1zY9QH91Eeycd-PD-JGeXg" supplier="_qOH_wH90Eeycd-PD-JGeXg"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_knKsYH92Eeycd-PD-JGeXg" client="_K5_1gH90Eeycd-PD-JGeXg" supplier="_qOH_wH90Eeycd-PD-JGeXg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_hfnd4H98Eeycd-PD-JGeXg" name="ArrowHead Framework">
+    <ownedComment xmi:type="uml:Comment" xmi:id="_QCaKsH99Eeycd-PD-JGeXg">
+      <body>1. Temperature and Valve Register their provided service at ServiceRegistry&#xD;
+2. Thermostat request information about Temperature and Valve at the Orchestrator&#xD;
+3. Orchestrator query the ServiceRegistry about Temperature and Valve at the Orchestrator&#xD;
+4. Orchestrator checks if authorized at Authorization&#xD;
+5. Orchestrator return the information to the Thermostat&#xD;
+6. Thermostat access the services of Temperature and Valve&#xD;
+&#xD;
+</body>
+    </ownedComment>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_lpuG0H98Eeycd-PD-JGeXg" name="ServiceRegistry"/>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_o5ToQH98Eeycd-PD-JGeXg" name="Orchestrator">
+      <generalization xmi:type="uml:Generalization" xmi:id="_3cx4wH98Eeycd-PD-JGeXg" general="_lpuG0H98Eeycd-PD-JGeXg">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_9FjpsH99Eeycd-PD-JGeXg" annotatedElement="_3cx4wH98Eeycd-PD-JGeXg">
+          <body>3</body>
+        </ownedComment>
+      </generalization>
+      <generalization xmi:type="uml:Generalization" xmi:id="_-CMtkH98Eeycd-PD-JGeXg" general="_ppaPgH98Eeycd-PD-JGeXg"/>
+      <generalization xmi:type="uml:Generalization" xmi:id="_-05V0H98Eeycd-PD-JGeXg" general="_qUbicH98Eeycd-PD-JGeXg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_pWZM4H98Eeycd-PD-JGeXg" name="Temperature">
+      <generalization xmi:type="uml:Generalization" xmi:id="_7eieAH98Eeycd-PD-JGeXg" general="_lpuG0H98Eeycd-PD-JGeXg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_ppaPgH98Eeycd-PD-JGeXg" name="Thermostat">
+      <generalization xmi:type="uml:Generalization" xmi:id="_8QGd0H98Eeycd-PD-JGeXg" general="_pWZM4H98Eeycd-PD-JGeXg"/>
+      <generalization xmi:type="uml:Generalization" xmi:id="_9Hk4YH98Eeycd-PD-JGeXg" general="_o5ToQH98Eeycd-PD-JGeXg"/>
+      <generalization xmi:type="uml:Generalization" xmi:id="_BDVjUH99Eeycd-PD-JGeXg" general="_qEH1kH98Eeycd-PD-JGeXg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_qEH1kH98Eeycd-PD-JGeXg" name="Valve">
+      <generalization xmi:type="uml:Generalization" xmi:id="_AKyKsH99Eeycd-PD-JGeXg" general="_lpuG0H98Eeycd-PD-JGeXg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:UseCase" xmi:id="_qUbicH98Eeycd-PD-JGeXg" name="Authorization"/>
+  </packagedElement>
+  <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_NIptIFrPEeykDs0sggZmCw">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_NIswcFrPEeykDs0sggZmCw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="pathmap://PAPYRUS_ACTIONLANGUAGE_PROFILE/ActionLanguage-Profile.profile.uml#_Kv8EIKFXEeS_KNX0nfvIVQ"/>
+    </eAnnotations>
+    <appliedProfile xmi:type="uml:Profile" href="pathmap://PAPYRUS_ACTIONLANGUAGE_PROFILE/ActionLanguage-Profile.profile.uml#ActionLanguage"/>
+  </profileApplication>
+</uml:Model>
