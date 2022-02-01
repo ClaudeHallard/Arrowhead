@@ -21,7 +21,7 @@ This project is a part of the Course D0020E at Luleå University of Technology
 ##### OBS!, Make sure to have a c-compiler installed in your %PATH to be able to use the imported SQLite extenstion used in this project.
 
 <br>
-__Note2:__ The ```clientTest.go``` file can be used to test and run diagnostics on this serviceRegistry demo, it contains different test methods for all services provided in this demo, it can be compiled with ```go run clientTest.go```
+__Note:__ The ```clientTest.go``` file can be used to test and run diagnostics on this serviceRegistry demo, it contains different test methods for all services provided in this demo, it can be compiled with ```go run clientTest.go```
 # 
 ## Service methods Overview
 
