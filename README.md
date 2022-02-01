@@ -25,7 +25,6 @@ This project is a part of the Course D0020E at Luleå University of Technology
 
 - [State Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/StateDiagram.png)
 
-<br>
 
 ## Compile and run instructions
 
