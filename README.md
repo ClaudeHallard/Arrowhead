@@ -4,10 +4,27 @@
 
 ##  __System Overview__
 
-This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in GOLANG, an SQLite based storage is used for this demo. Design structures and schematics are provided in the UML directory. 
+This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in GOLANG, an SQLite based storage is used for this demo. 
 
+<br>
 
 This project is a part of the Course D0020E at Luleå University of Technology
+### Design structures and UML schematics:
+
+- [System Overview](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/Overview.png) (Relation view for the service registry and other API's in the framework)
+
+- [Use Case Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/UseCaseDiagram.png)
+
+- [Class Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/class_fileStructureDiagram.png)
+
+- [Database Schema](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/DatabaseSchema.png)
+
+- [Activity Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/ProviderActivityDiagram.png) (Provider client)
+
+- [Activity Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/ConsumerActivityDiagram.png) (Consumer client)
+
+- [State Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/StateDiagram.png)
+
 <br>
 
 ## Compile and run instructions
@@ -24,6 +41,9 @@ This project is a part of the Course D0020E at Luleå University of Technology
 
 __Note:__ The ```clientTest.go``` file can be used to test and run diagnostics on this serviceRegistry demo, it contains different test methods for all services provided in this demo, it can be compiled with ```go run clientTest.go```
 
+
+### __Database clarifications__
+This implementation is using a local based SQLite database stored in the file: ```registryDB.db``` in the main directory. No database management system is required to use the Service Registry but is recommended for eventual testing and debug checks. In the developement of this demo, ["__SQLitestudio__"](https://sqlitestudio.pl/) and ["__DBBrowser__"](https://sqlitebrowser.org/) has been used.
 # 
 ## Service methods Overview
 
