@@ -88,6 +88,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 }
 
 func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryForm ServiceQueryForm) *ServiceQueryList {
+
 	var queryHits []ServiceRegistryEntryOutput
 	for _, v := range serviceQueryList.ServiceQueryData {
 		if v.ServiceDefinition.ServiceDefinition == serviceQueryForm.ServiceDefinitionRequirement {
@@ -141,9 +142,11 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 				service.Interfaces = append(service.Interfaces, v)
 			}
 		}
+
 		serviceList = append(serviceList, service)
 
 	}
+
 	defer rows.Close()
 	return serviceList
 }
@@ -203,4 +206,42 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 	}
 	defer rows.Close()
 	return serviceID, metaData
+}
+func deleteByID(id int) {
+	stmt, err := db.Prepare("DELETE FROM Services WHERE id = ?")
+	handleError("could not prepare statement: %v", err)
+	_, err = stmt.Exec(id)
+
+	handleError("delete failed: %v", err)
+
+}
+func cleanPastValidityDate() {
+	var pastValidityServices []int
+	var id int
+	var endOfValidity string
+	rows, err := db.Query("SELECT id, endoOfValidity FROM Services")
+	handleError("query failed: %v", err)
+	for rows.Next() {
+		err := rows.Scan(&id, &endOfValidity)
+		handleError("query failed: %v", err)
+		if !validityCheck(endOfValidity) {
+			pastValidityServices = append(pastValidityServices, id)
+		}
+	}
+	defer rows.Close()
+	for _, v := range pastValidityServices {
+		deleteByID(v)
+	}
+
+}
+func validityCheck(timeString string) bool {
+	t, err := time.Parse(time.RFC3339, timeString)
+	if err != nil {
+
+		println(err.Error())
+
+		return false
+	}
+	return time.Now().Before(t)
+
 }
