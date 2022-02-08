@@ -11,11 +11,11 @@ import (
 )
 
 func main() {
-	convert = true //Set to true to convert from metadata array to struct
+	convert = false //Set to true to convert from metadata array to struct
 	println("Converting when sending: " + strconv.FormatBool(convert))
 
-	preformTests("query", 100, 40) //preforms 100 querys
-
+	//preformTests("query", 10000, 40) //preforms 100 querys
+	preformTests("register", 1, 100)
 }
 
 var convert bool //Set to true to convert from metadata array to struct
@@ -98,6 +98,7 @@ func sendRequest(req *http.Request) ([]byte, testData) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
+	println("Respons: " + string(body))
 	if err != nil {
 
 		panic("Failed to read response")
@@ -107,8 +108,9 @@ func sendRequest(req *http.Request) ([]byte, testData) {
 }
 func preformTests(testType string, amount int, start int) {
 	var totalTime time.Duration
-	address := "192.168.0.119:8443" //java version
+	//address := "192.168.0.119:8443" //java version
 	//address := "192.168.0.119:4245" //golang version
+	address := "localhost:4245" //golang version
 	//change convert depending on address
 	switch typeSwitch := testType; typeSwitch {
 	case "query":
@@ -155,7 +157,8 @@ func createRegisterRequest(i int, address string) *http.Request {
 		},
 	}
 	body, _ := json.Marshal(serviceRegistryEntry)
-	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/query", bytes.NewBuffer(body))
+	println("Sending: " + string(body))
+	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/register", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
 		panic(err.Error())
@@ -176,6 +179,7 @@ func createQueryRequest(i int, address string) *http.Request {
 		PingProviders:                false,
 	}
 	body, _ := json.Marshal(serviceQueryForm)
+	println("Sending: " + string(body))
 	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/query", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
