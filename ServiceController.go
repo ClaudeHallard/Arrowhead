@@ -25,9 +25,14 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 	c.BindJSON(&serviceRegistryEntry)
 	println("Registration recived for: " + serviceRegistryEntry.ServiceDefinition)
 	respForm := serviceRegistryEntry.Save()
-	println("register worked")
-	c.JSON(http.StatusOK, respForm)
+	if respForm == nil {
+		println("register denied, service allready exist")
+		c.JSON(http.StatusOK, "service denied")
 
+	} else {
+		println("register worked")
+		c.JSON(http.StatusOK, respForm)
+	}
 }
 
 // route: POST serviceregistry/query

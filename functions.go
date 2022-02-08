@@ -37,39 +37,54 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	return serviceQueryList
 }
 
+// check for serviceURI AND / OR serviceDefinition
+func GetCount(servicedef string, serviceURI string) int {
+	var cnt int
+	//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
+	_ = db.QueryRow(`select count(*) from Services where serviceURI = ?`, serviceURI).Scan(&cnt)
+	return cnt
+}
+
 // function to store the register input
 func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
-	stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+	// check if the service exist
+	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
 
-	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	} else {
 
-	res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
-	if err != nil {
-		println(err.Error())
-		panic("Encounterd an error during registration while inserting service")
-	}
-	lastId, err := res.LastInsertId()
-	handleError("failed to store: %v", err)
-	for _, v := range model.Metadata {
-		stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
+		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+
+		currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+		res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
 		if err != nil {
 			println(err.Error())
-			panic("Encounterd an error during registration while inserting metadata")
+			panic("Encounterd an error during registration while inserting service")
 		}
-		_, err = stmt.Exec(lastId, v)
+		lastId, err := res.LastInsertId()
+		handleError("failed to store: %v", err)
+		for _, v := range model.Metadata {
+			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
+			if err != nil {
+				println(err.Error())
+				panic("Encounterd an error during registration while inserting metadata")
+			}
+			_, err = stmt.Exec(lastId, v)
 
+		}
+
+		//loop through the interfaces array and add them to the table.
+		for _, v := range model.Interfaces {
+			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
+			handleError("could prepare statement: %v", err)
+			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
+		}
+		handleError("failed to store: %v", err)
+
+		return &getServiceByID(lastId)[0]
 	}
-
-	//loop through the interfaces array and add them to the table.
-	for _, v := range model.Interfaces {
-		stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
-		handleError("could prepare statement: %v", err)
-		_, err = stmt.Exec(lastId, v, currentTime, currentTime)
-	}
-	handleError("failed to store: %v", err)
-
-	return &getServiceByID(lastId)[0]
+	return nil
 }
 
 // Function to delete a service and the assosiated data

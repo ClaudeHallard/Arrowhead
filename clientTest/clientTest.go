@@ -12,12 +12,12 @@ import (
 func main() {
 	//echoTest()
 	//registerTest()
-	//createAndRegister(1)
+	createAndRegister(-8)
 	//createAndRegister(2)
 	//createAndRegister(7)
 	//queryTest()
 	//deleteTestTwo(8)
-	populateDB(4)
+	//populateDB(4)
 
 }
 
