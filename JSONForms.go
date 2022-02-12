@@ -34,7 +34,19 @@ type Interface struct {
 	UpdatedAt     string `json:"updatedAt"`
 }
 
-// ServiceRegistryEntry Input Version
+// ServiceRegistryEntry Input Version JAVA
+type ServiceRegistryEntryInputJava struct {
+	ServiceDefinition string         `json:"serviceDefinition"`
+	ProviderSystem    ProviderSystem `json:"providerSystem"`
+	ServiceUri        string         `json:"serviceUri"`
+	EndOfvalidity     string         `json:"endOfValidity"`
+	Secure            string         `json:"secure"`
+	MetadataOld       MetadataOld    `json:"metadata"`
+	Version           int            `json:"version"`
+	Interfaces        []string       `json:"interfaces"`
+}
+
+// ServiceRegistryEntry Input Version GOLANG
 type ServiceRegistryEntryInput struct {
 	ServiceDefinition string         `json:"serviceDefinition"`
 	ProviderSystem    ProviderSystem `json:"providerSystem"`
