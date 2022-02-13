@@ -87,66 +87,6 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 	return nil
 }
 
-// function to store the register input. Looping through struct instead of string array.
-func (model *ServiceRegistryEntryInputJava) SaveJava() *ServiceRegistryEntryOutput {
-
-	// check if the service exist
-	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
-
-	} else {
-
-		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
-		currentTime := time.Now().Format("2006-01-02 15:04:05")
-
-		res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
-		println("hit")
-		if err != nil {
-			println(err.Error())
-			panic("Encounterd an error during registration while inserting service")
-		}
-		lastId, err := res.LastInsertId()
-		handleError("failed to store: %v", err)
-
-		// Insert metadata
-		stmt1, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
-		metadata1 := model.MetadataOld.AdditionalProp1
-		println(model.MetadataOld.AdditionalProp1)
-		print("hej")
-		if len(metadata1) == 0 {
-			println("No metadata1")
-		} else {
-			_, err = stmt1.Exec(lastId, metadata1)
-
-			stmt2, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
-			metadata2 := model.MetadataOld.AdditionalProp2
-			if len(metadata2) > 0 && err == nil {
-				_, err = stmt2.Exec(lastId, metadata2)
-			} else {
-				println("No metadata2")
-			}
-
-			stmt3, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
-			metadata3 := model.MetadataOld.AdditionalProp3
-			if len(metadata3) > 0 && err == nil {
-				_, err = stmt3.Exec(lastId, metadata2)
-			} else {
-				println("No metadata3")
-			}
-		}
-
-		//loop through the interfaces array and add them to the table.
-		for _, v := range model.Interfaces {
-			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
-			handleError("could prepare statement: %v", err)
-			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
-		}
-		handleError("failed to store: %v", err)
-
-		return &getServiceByID(lastId)[0]
-	}
-	return nil
-}
-
 // Function to delete a service and the assosiated data
 func (model *ServiceRegistryEntryInput) Delete() bool {
 	stmt, err := db.Prepare("DELETE FROM Services WHERE serviceDefinition = ? AND systemName = ? AND  address = ? AND port = ?")
