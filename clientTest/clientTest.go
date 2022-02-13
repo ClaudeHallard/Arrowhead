@@ -63,11 +63,13 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"NOT_SECURE"`
-	Metadata          []string       `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
+	MetadataJava      MetadataOld    `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
 
+/*
 // ServiceRegistryEntry Input Version JAVA
 type ServiceRegistryEntryInputJava struct {
 	ServiceDefinition string         `json:"serviceDefinition"`
@@ -75,10 +77,11 @@ type ServiceRegistryEntryInputJava struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	MetadataOld       MetadataOld    `json:"metadata"`
+	MetadataJava      MetadataOld    `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
+*/
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
 	Address            string `json:"adress"`
@@ -156,17 +159,17 @@ func echoTest() {
 
 func registerTest() {
 	serviceRegistryEntry := &ServiceRegistryEntryInput{
-		ServiceDefinition: "aa",
+		ServiceDefinition: "ut",
 		ProviderSystem: ProviderSystem{
 			SystemName:         "bb",
 			Address:            "cc",
 			Port:               222,
 			AuthenticationInfo: "dd",
 		},
-		ServiceUri:    "ee",
+		ServiceUri:    "tu",
 		EndOfvalidity: "ff",
 		Secure:        "gg",
-		Metadata: []string{
+		MetadataGo: []string{
 			"metadata1",
 			"metadata2",
 			"metadata3",
@@ -187,18 +190,18 @@ func registerTest() {
 }
 
 func registerTestJava() {
-	serviceRegistryEntry := &ServiceRegistryEntryInputJava{
-		ServiceDefinition: "gg",
+	serviceRegistryEntry := &ServiceRegistryEntryInput{
+		ServiceDefinition: "pj",
 		ProviderSystem: ProviderSystem{
 			SystemName:         "bb",
 			Address:            "cc",
 			Port:               222,
 			AuthenticationInfo: "dd",
 		},
-		ServiceUri:    "pp",
+		ServiceUri:    "jp",
 		EndOfvalidity: "ff",
 		Secure:        "gg",
-		MetadataOld: MetadataOld{
+		MetadataJava: MetadataOld{
 			AdditionalProp1: "test1",
 			AdditionalProp2: "test2",
 			AdditionalProp3: "test3",
@@ -256,7 +259,7 @@ func createAndRegister(i int) {
 		ServiceUri:    "serviceUri" + strconv.Itoa(i),
 		EndOfvalidity: "endofValidity" + strconv.Itoa(i),
 		Secure:        "NOT_SECURE",
-		Metadata: []string{
+		MetadataGo: []string{
 			strconv.Itoa(i) + "metadataA",
 			strconv.Itoa(i) + "metadataB",
 			strconv.Itoa(i) + "metadataC",

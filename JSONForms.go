@@ -6,9 +6,9 @@ package main
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
 type MetadataOld struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
+	AdditionalProp1 string `json:"AdditionalProp1"`
+	AdditionalProp2 string `json:"AdditionalProp2"`
+	AdditionalProp3 string `json:"AdditionalProp3"`
 }
 
 type ServiceDefinition struct {
@@ -34,6 +34,7 @@ type Interface struct {
 	UpdatedAt     string `json:"updatedAt"`
 }
 
+/*
 // ServiceRegistryEntry Input Version JAVA
 type ServiceRegistryEntryInputJava struct {
 	ServiceDefinition string         `json:"serviceDefinition"`
@@ -41,11 +42,11 @@ type ServiceRegistryEntryInputJava struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	MetadataOld       MetadataOld    `json:"metadata"`
+	MetadataJava      MetadataOld    `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
-
+*/
 // ServiceRegistryEntry Input Version GOLANG
 type ServiceRegistryEntryInput struct {
 	ServiceDefinition string         `json:"serviceDefinition"`
@@ -53,7 +54,8 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	Metadata          []string       `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
+	MetadataJava      MetadataOld    `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }

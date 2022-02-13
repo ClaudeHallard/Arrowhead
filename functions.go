@@ -64,7 +64,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		}
 		lastId, err := res.LastInsertId()
 		handleError("failed to store: %v", err)
-		for _, v := range model.Metadata {
+		for _, v := range model.MetadataGo {
 			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
 			if err != nil {
 				println(err.Error())
@@ -88,7 +88,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 }
 
 // function to store the register input. Looping through struct instead of string array.
-func (model *ServiceRegistryEntryInputJava) SaveJava() *ServiceRegistryEntryOutput {
+func (model *ServiceRegistryEntryInput) SaveJava() *ServiceRegistryEntryOutput {
 
 	// check if the service exist
 	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
@@ -109,8 +109,8 @@ func (model *ServiceRegistryEntryInputJava) SaveJava() *ServiceRegistryEntryOutp
 
 		// Insert metadata
 		stmt1, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
-		metadata1 := model.MetadataOld.AdditionalProp1
-		println(model.MetadataOld.AdditionalProp1)
+		metadata1 := model.MetadataJava.AdditionalProp1
+		println(model.MetadataJava.AdditionalProp1)
 		print("hej")
 		if len(metadata1) == 0 {
 			println("No metadata1")
@@ -118,7 +118,7 @@ func (model *ServiceRegistryEntryInputJava) SaveJava() *ServiceRegistryEntryOutp
 			_, err = stmt1.Exec(lastId, metadata1)
 
 			stmt2, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
-			metadata2 := model.MetadataOld.AdditionalProp2
+			metadata2 := model.MetadataJava.AdditionalProp2
 			if len(metadata2) > 0 && err == nil {
 				_, err = stmt2.Exec(lastId, metadata2)
 			} else {
@@ -126,7 +126,7 @@ func (model *ServiceRegistryEntryInputJava) SaveJava() *ServiceRegistryEntryOutp
 			}
 
 			stmt3, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
-			metadata3 := model.MetadataOld.AdditionalProp3
+			metadata3 := model.MetadataJava.AdditionalProp3
 			if len(metadata3) > 0 && err == nil {
 				_, err = stmt3.Exec(lastId, metadata2)
 			} else {
