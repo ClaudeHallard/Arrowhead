@@ -269,9 +269,10 @@ func validityCheck(timeString string) bool {
 }
 
 //ticker for the time between validity cleaning
-func startValidityTimer(minutes time.Duration) {
+func startValidityTimer(minutes int) {
 	cleanPastValidityDate()
-	ticker := time.NewTicker(minutes * time.Minute)
+	fmt.Printf("Clean delay set to: %d minutes\n", minutes)
+	ticker := time.NewTicker(time.Duration(minutes) * time.Minute)
 	for _ = range ticker.C {
 
 		cleanPastValidityDate()

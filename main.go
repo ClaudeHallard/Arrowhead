@@ -1,16 +1,21 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
+	"strconv"
 
 	"github.com/hariadivicky/nano" // import RESTful methods.
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	config := getConfig()
 	//OpenDatabase("file:registryDB.db?cache=private")
 	OpenDatabase("file:registryDB.db?cache=private&_foreign_keys=on")
-	go startValidityTimer(5) //starts cleaning on ticks in background
+	go startValidityTimer(config.CleanDelay) //starts cleaning on ticks in background
+
 	n := nano.New()
 
 	n.Use(nano.Recovery())
@@ -23,10 +28,42 @@ func main() {
 	n.POST("/serviceregistry/register", method.Store)
 	n.DELETE("/serviceregistry/unregister", method.Unregister)
 
-	log.Println("server running at port 4245")
+	log.Println("server running at port: " + strconv.Itoa(config.Port))
 
-	err := n.Run(":4245")
+	err := n.Run(":" + strconv.Itoa(config.Port))
 	if err != nil {
 		log.Fatalf("could not start application: %v", err)
 	}
+}
+
+type configJson struct {
+	Port       int `json:"port"`
+	CleanDelay int `json:"endofValidityCleaningCycle"`
+}
+
+func getConfig() configJson {
+	dat, err := ioutil.ReadFile("./config.json")
+	var config configJson
+	if err != nil {
+		println("No config found. Using default parameters.")
+		config.Port = 4245
+		config.CleanDelay = 10
+		dat, err := json.Marshal(config)
+		if err != nil {
+			panic(err.Error())
+		}
+		err = ioutil.WriteFile("./config.json", dat, 0644)
+		if err != nil {
+			panic(err.Error())
+		}
+
+	} else {
+		err = json.Unmarshal(dat, &config)
+		if err != nil {
+			panic(err.Error())
+		}
+
+	}
+
+	return config
 }
