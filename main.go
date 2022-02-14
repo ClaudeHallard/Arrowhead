@@ -10,7 +10,7 @@ import (
 func main() {
 	//OpenDatabase("file:registryDB.db?cache=private")
 	OpenDatabase("file:registryDB.db?cache=private&_foreign_keys=on")
-
+	go startValidityTimer(5) //starts cleaning on ticks in background
 	n := nano.New()
 
 	n.Use(nano.Recovery())

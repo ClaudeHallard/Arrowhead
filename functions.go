@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -115,6 +116,7 @@ func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryFo
 	return serviceQueryList
 }
 
+//Function to get a specific or all services
 func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then all services will be retured
 	var serviceList []ServiceRegistryEntryOutput
 	//Get the interfaces
@@ -146,19 +148,21 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 			println(err.Error())
 			panic("Encounterd an error while quering the database for services")
 		}
-		for i := 0; i < len(metaData); i++ {
+		if validityCheck(service.EndOfValidity) {
+			for i := 0; i < len(metaData); i++ {
 
-			if service.ID == metaServiceID[i] {
-				service.Metadata = append(service.Metadata, metaData[i])
+				if service.ID == metaServiceID[i] {
+					service.Metadata = append(service.Metadata, metaData[i])
+				}
 			}
-		}
-		for _, v := range interfaces {
-			if service.ID == v.ID {
-				service.Interfaces = append(service.Interfaces, v)
+			for _, v := range interfaces {
+				if service.ID == v.ID {
+					service.Interfaces = append(service.Interfaces, v)
+				}
 			}
-		}
 
-		serviceList = append(serviceList, service)
+			serviceList = append(serviceList, service)
+		}
 
 	}
 
@@ -166,6 +170,7 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 	return serviceList
 }
 
+//Function to get a specific or all interfaces
 func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces will be retured
 	var interfaces []Interface
 	var rows *sql.Rows
@@ -192,6 +197,7 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 	return interfaces
 }
 
+//Function to get a specific or all metadata
 func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadata will be retured
 	var serviceID []int
 	var metaData []string
@@ -231,10 +237,11 @@ func deleteByID(id int) {
 
 }
 func cleanPastValidityDate() {
+	fmt.Println("Preforming endOfValidity Cleaning")
 	var pastValidityServices []int
 	var id int
 	var endOfValidity string
-	rows, err := db.Query("SELECT id, endoOfValidity FROM Services")
+	rows, err := db.Query("SELECT id, endOfValidity FROM Services")
 	handleError("query failed: %v", err)
 	for rows.Next() {
 		err := rows.Scan(&id, &endOfValidity)
@@ -245,6 +252,8 @@ func cleanPastValidityDate() {
 	}
 	defer rows.Close()
 	for _, v := range pastValidityServices {
+
+		fmt.Printf("Removing service with ID: %d, the endOfValidity is not valid\n", v)
 		deleteByID(v)
 	}
 
@@ -253,10 +262,18 @@ func validityCheck(timeString string) bool {
 	t, err := time.Parse(time.RFC3339, timeString)
 	if err != nil {
 
-		println(err.Error())
-
 		return false
 	}
 	return time.Now().Before(t)
 
+}
+
+//ticker for the time between validity cleaning
+func startValidityTimer(minutes time.Duration) {
+	cleanPastValidityDate()
+	ticker := time.NewTicker(minutes * time.Minute)
+	for _ = range ticker.C {
+
+		cleanPastValidityDate()
+	}
 }
