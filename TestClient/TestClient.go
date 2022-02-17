@@ -14,8 +14,11 @@ func main() {
 	convert = false //Set to true to convert from metadata array to struct
 	println("Converting when sending: " + strconv.FormatBool(convert))
 
+	//preformTests("echo", 100, 0) // preform 100 echo calls
 	//preformTests("query", 10000, 40) //preforms 100 querys
-	preformTests("register", 5, 100)
+
+	preformTests("register", 5, 100) //registers 5 services, starting at index 100
+	//preformTests("unregister", 5, 100) // unregisters 5 services, starting at index 100
 }
 
 var convert bool //Set to true to convert from metadata array to struct
@@ -130,6 +133,21 @@ func preformTests(testType string, amount int, start int) {
 			start++
 		}
 
+	case "unregister":
+		for i := 0; i < amount; i++ {
+			_, tD := sendRequest(createUnregisterRequest(start, address))
+			totalTime = totalTime + tD.elapsedTime
+			fmt.Printf("\n#%d  Status: %s   Time %s", i, tD.status, tD.elapsedTime)
+			start++
+		}
+
+	case "echo":
+		for i := 0; i < amount; i++ {
+			_, tD := sendRequest(echoRequest(start, address))
+			totalTime = totalTime + tD.elapsedTime
+			fmt.Printf("\n#%d  Status: %s   Time %s", i, tD.status, tD.elapsedTime)
+			start++
+		}
 	}
 	fmt.Printf("\nTotaltime %s ", totalTime)
 }
@@ -190,5 +208,47 @@ func createQueryRequest(i int, address string) *http.Request {
 	return req
 }
 func createUnregisterRequest(i int, address string) *http.Request {
-	return nil
+	println("test")
+	serviceRegistryEntry := &ServiceRegistryEntryInput{
+		ServiceDefinition: "TestSD" + strconv.Itoa(i),
+		ProviderSystem: ProviderSystem{
+			SystemName:         "string",
+			Address:            "string",
+			Port:               0,
+			AuthenticationInfo: "string",
+		},
+		ServiceUri:    "TestSUri" + strconv.Itoa(i),
+		EndOfvalidity: "2025-04-14T11:07:36.639Z",
+		//EndOfvalidity: "2002-04-14T11:07:36.639Z", // test for an invalid date
+		Secure: "NOT_SECURE",
+		Metadata: []string{
+			"metadata1",
+			"metadata2",
+			"metadata3",
+		},
+
+		Version: 0,
+		Interfaces: []string{
+			"HTTP-SECURE-JSON",
+		},
+	}
+	body, _ := json.Marshal(serviceRegistryEntry)
+	println("Sending: " + string(body))
+	req, err := http.NewRequest("DELETE", "http://"+address+"/serviceregistry/unregister", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return req
+}
+
+func echoRequest(i int, address string) *http.Request {
+
+	req, err := http.NewRequest("GET", "http://"+address+"/serviceregistry/echo", nil)
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		panic(err.Error())
+	}
+	return req
 }
