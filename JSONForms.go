@@ -74,7 +74,8 @@ type ServiceRegistryEntryOutput struct {
 	ServiceUri        string            `json:"serviceUri"`
 	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"secure"`
-	Metadata          []string          `json:"metadata"`
+	MetadataGo        []string          `json:"metadataGo"`
+	MetadataJava      MetadataOld       `json:"metadata"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
 	CreatedAt         string            `json:"createdAt"`

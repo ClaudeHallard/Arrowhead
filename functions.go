@@ -167,6 +167,15 @@ func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryFo
 	var queryHits []ServiceRegistryEntryOutput
 	for _, v := range serviceQueryList.ServiceQueryData {
 		if v.ServiceDefinition.ServiceDefinition == serviceQueryForm.ServiceDefinitionRequirement {
+			if len(v.MetadataGo) >= 1 {
+				v.MetadataJava.AdditionalProp1 = v.MetadataGo[0]
+			}
+			if len(v.MetadataGo) >= 2 {
+				v.MetadataJava.AdditionalProp2 = v.MetadataGo[1]
+			}
+			if len(v.MetadataGo) >= 3 {
+				v.MetadataJava.AdditionalProp3 = v.MetadataGo[2]
+			}
 			queryHits = append(queryHits, v)
 		}
 
@@ -206,12 +215,13 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 			println(err.Error())
 			panic("Encounterd an error while quering the database for services")
 		}
+		//var counter = 0
 		for i := 0; i < len(metaData); i++ {
-
 			if service.ID == metaServiceID[i] {
-				service.Metadata = append(service.Metadata, metaData[i])
+				service.MetadataGo = append(service.MetadataGo, metaData[i])
 			}
 		}
+
 		for _, v := range interfaces {
 			if service.ID == v.ID {
 				service.Interfaces = append(service.Interfaces, v)
@@ -221,7 +231,6 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 		serviceList = append(serviceList, service)
 
 	}
-
 	defer rows.Close()
 	return serviceList
 }

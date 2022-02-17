@@ -12,11 +12,11 @@ import (
 func main() {
 	//echoTest()
 	//registerTest()
-	registerTestJava()
+	//registerTestJava()
 	//createAndRegister(-8)
 	//createAndRegister(2)
 	//createAndRegister(7)
-	//queryTest()
+	queryTest()
 	//deleteTestTwo(8)
 	//populateDB(4)
 
@@ -159,14 +159,14 @@ func echoTest() {
 
 func registerTest() {
 	serviceRegistryEntry := &ServiceRegistryEntryInput{
-		ServiceDefinition: "ut",
+		ServiceDefinition: "JavaQueryTests",
 		ProviderSystem: ProviderSystem{
 			SystemName:         "bb",
 			Address:            "cc",
 			Port:               222,
 			AuthenticationInfo: "dd",
 		},
-		ServiceUri:    "tu",
+		ServiceUri:    "JavaQueryTest",
 		EndOfvalidity: "ff",
 		Secure:        "gg",
 		MetadataGo: []string{
@@ -280,7 +280,7 @@ func createAndRegister(i int) {
 }
 func queryTest() {
 	serviceQueryForm := ServiceQueryForm{
-		ServiceDefinitionRequirement: "serviceDef1",
+		ServiceDefinitionRequirement: "JavaQueryTests",
 		InterfaceRequirements:        []string{},
 		SecurityReRequirements:       []string{},
 		MetadataRequirements:         []string{},
