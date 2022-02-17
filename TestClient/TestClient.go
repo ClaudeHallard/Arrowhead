@@ -15,7 +15,7 @@ func main() {
 	println("Converting when sending: " + strconv.FormatBool(convert))
 
 	//preformTests("query", 10000, 40) //preforms 100 querys
-	preformTests("register", 1, 100)
+	preformTests("register", 5, 100)
 }
 
 var convert bool //Set to true to convert from metadata array to struct
@@ -144,7 +144,8 @@ func createRegisterRequest(i int, address string) *http.Request {
 		},
 		ServiceUri:    "TestSUri" + strconv.Itoa(i),
 		EndOfvalidity: "2025-04-14T11:07:36.639Z",
-		Secure:        "NOT_SECURE",
+		//EndOfvalidity: "2002-04-14T11:07:36.639Z", // test for an invalid date
+		Secure: "NOT_SECURE",
 		Metadata: []string{
 			"metadata1",
 			"metadata2",

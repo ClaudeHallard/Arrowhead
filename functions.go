@@ -49,9 +49,13 @@ func GetCount(servicedef string, serviceURI string) int {
 // function to store the register input
 func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
+	if !validityCheck(model.EndOfvalidity) {
+		return nil
+
+	}
 	// check if the service exist
 	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
-
+		return nil
 	} else {
 
 		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
@@ -85,7 +89,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 		return &getServiceByID(lastId)[0]
 	}
-	return nil
+	//return nil
 }
 
 // Function to delete a service and the assosiated data

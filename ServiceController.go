@@ -6,8 +6,6 @@ import (
 	"github.com/hariadivicky/nano"
 )
 
-
-
 type JsonFile struct{}
 
 // ECHO return an OK if the server is running
@@ -28,8 +26,8 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 	println("Registration recived for: " + serviceRegistryEntry.ServiceDefinition)
 	respForm := serviceRegistryEntry.Save()
 	if respForm == nil {
-		println("register denied, service allready exist")
-		c.JSON(http.StatusOK, "service denied")
+		println("register denied, service allready exist or bad payload")
+		c.JSON(http.StatusOK, "service denied, service allready exist or bad payload")
 
 	} else {
 		println("register worked")
