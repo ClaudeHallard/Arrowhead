@@ -6,9 +6,9 @@ package main
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
 type MetadataOld struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
+	AdditionalProp1 string `json:"AdditionalProp1"`
+	AdditionalProp2 string `json:"AdditionalProp2"`
+	AdditionalProp3 string `json:"AdditionalProp3"`
 }
 
 type ServiceDefinition struct {
@@ -34,14 +34,28 @@ type Interface struct {
 	UpdatedAt     string `json:"updatedAt"`
 }
 
-// ServiceRegistryEntry Input Version
+/*
+// ServiceRegistryEntry Input Version JAVA
+type ServiceRegistryEntryInputJava struct {
+	ServiceDefinition string         `json:"serviceDefinition"`
+	ProviderSystem    ProviderSystem `json:"providerSystem"`
+	ServiceUri        string         `json:"serviceUri"`
+	EndOfvalidity     string         `json:"endOfValidity"`
+	Secure            string         `json:"secure"`
+	MetadataJava      MetadataOld    `json:"metadata"`
+	Version           int            `json:"version"`
+	Interfaces        []string       `json:"interfaces"`
+}
+*/
+// ServiceRegistryEntry Input Version GOLANG
 type ServiceRegistryEntryInput struct {
 	ServiceDefinition string         `json:"serviceDefinition"`
 	ProviderSystem    ProviderSystem `json:"providerSystem"`
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	Metadata          []string       `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
+	MetadataJava      MetadataOld    `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
@@ -60,7 +74,8 @@ type ServiceRegistryEntryOutput struct {
 	ServiceUri        string            `json:"serviceUri"`
 	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"secure"`
-	Metadata          []string          `json:"metadata"`
+	MetadataGo        []string          `json:"metadataGo"`
+	MetadataJava      MetadataOld       `json:"metadata"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
 	CreatedAt         string            `json:"createdAt"`

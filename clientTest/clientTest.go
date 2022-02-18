@@ -12,10 +12,11 @@ import (
 func main() {
 	//echoTest()
 	//registerTest()
-	createAndRegister(-8)
+	//registerTestJava()
+	//createAndRegister(-8)
 	//createAndRegister(2)
 	//createAndRegister(7)
-	//queryTest()
+	queryTest()
 	//deleteTestTwo(8)
 	//populateDB(4)
 
@@ -62,10 +63,25 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"NOT_SECURE"`
-	Metadata          []string       `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
+	MetadataJava      MetadataOld    `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
+
+/*
+// ServiceRegistryEntry Input Version JAVA
+type ServiceRegistryEntryInputJava struct {
+	ServiceDefinition string         `json:"serviceDefinition"`
+	ProviderSystem    ProviderSystem `json:"providerSystem"`
+	ServiceUri        string         `json:"serviceUri"`
+	EndOfvalidity     string         `json:"endOfValidity"`
+	Secure            string         `json:"secure"`
+	MetadataJava      MetadataOld    `json:"metadata"`
+	Version           int            `json:"version"`
+	Interfaces        []string       `json:"interfaces"`
+}
+*/
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
 	Address            string `json:"adress"`
@@ -143,17 +159,17 @@ func echoTest() {
 
 func registerTest() {
 	serviceRegistryEntry := &ServiceRegistryEntryInput{
-		ServiceDefinition: "aa",
+		ServiceDefinition: "JavaQueryTests",
 		ProviderSystem: ProviderSystem{
 			SystemName:         "bb",
 			Address:            "cc",
 			Port:               222,
 			AuthenticationInfo: "dd",
 		},
-		ServiceUri:    "ee",
+		ServiceUri:    "JavaQueryTest",
 		EndOfvalidity: "ff",
 		Secure:        "gg",
-		Metadata: []string{
+		MetadataGo: []string{
 			"metadata1",
 			"metadata2",
 			"metadata3",
@@ -172,6 +188,35 @@ func registerTest() {
 	body, _ := json.Marshal(serviceRegistryEntry)
 	sendPackage(body, "register", "POST")
 
+func registerTestJava() {
+	serviceRegistryEntry := &ServiceRegistryEntryInput{
+		ServiceDefinition: "pj",
+		ProviderSystem: ProviderSystem{
+			SystemName:         "bb",
+			Address:            "cc",
+			Port:               222,
+			AuthenticationInfo: "dd",
+		},
+		ServiceUri:    "jp",
+		EndOfvalidity: "ff",
+		Secure:        "gg",
+		MetadataJava: MetadataOld{
+			AdditionalProp1: "test1",
+			AdditionalProp2: "test2",
+			AdditionalProp3: "test3",
+		},
+
+		Version: 33,
+		Interfaces: []string{
+			"Interface1",
+			"Interface2",
+			"Interface3",
+			"Interface4",
+		},
+	}
+
+	body, _ := json.Marshal(serviceRegistryEntry)
+	sendPackage(body, "register", "POST")
 }
 func populateDB(entryAmount int) {
 	for i := 1; i <= entryAmount; i++ {
@@ -212,7 +257,7 @@ func createAndRegister(i int) {
 		ServiceUri:    "serviceUri" + strconv.Itoa(i),
 		EndOfvalidity: "endofValidity" + strconv.Itoa(i),
 		Secure:        "NOT_SECURE",
-		Metadata: []string{
+		MetadataGo: []string{
 			strconv.Itoa(i) + "metadataA",
 			strconv.Itoa(i) + "metadataB",
 			strconv.Itoa(i) + "metadataC",
@@ -233,7 +278,7 @@ func createAndRegister(i int) {
 }
 func queryTest() {
 	serviceQueryForm := ServiceQueryForm{
-		ServiceDefinitionRequirement: "serviceDef1",
+		ServiceDefinitionRequirement: "JavaQueryTests",
 		InterfaceRequirements:        []string{},
 		SecurityReRequirements:       []string{},
 		MetadataRequirements:         []string{},

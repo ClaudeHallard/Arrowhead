@@ -21,17 +21,36 @@ func (ctrl *JsonFile) Echo(c *nano.Context) {
 // route: POST serviceregistry/register
 func (ctrl *JsonFile) Store(c *nano.Context) {
 
-	serviceRegistryEntry := ServiceRegistryEntryInput{}
-	c.BindJSON(&serviceRegistryEntry)
-	println("Registration recived for: " + serviceRegistryEntry.ServiceDefinition)
-	respForm := serviceRegistryEntry.Save()
-	if respForm == nil {
-		println("register denied, service allready exist or bad payload")
-		c.JSON(http.StatusOK, "service denied, service allready exist or bad payload")
+	//bind
+	ServiceRegistryEntry := ServiceRegistryEntryInput{}
+	c.BindJSON(&ServiceRegistryEntry)
 
+	// If there is any metadata in struct --> run saveJava
+	println(ServiceRegistryEntry.MetadataJava.AdditionalProp1 + "hej")
+	if ServiceRegistryEntry.MetadataJava.AdditionalProp1 != "" {
+		respform1 := ServiceRegistryEntry.SaveJava() // måste kolla struct istället
+		println(ServiceRegistryEntry.MetadataJava.AdditionalProp1)
+		if respform1 == nil {
+			println("register denied, service allready exist")
+			println("java")
+			c.JSON(http.StatusOK, "service denied")
+		} else {
+			println("register Java")
+			println("register worked")
+			c.JSON(http.StatusOK, respform1)
+		}
 	} else {
-		println("register worked")
-		c.JSON(http.StatusOK, respForm)
+
+		respform2 := ServiceRegistryEntry.Save()
+		if respform2 == nil {
+			println("golang")
+			println("register denied, service allready exist")
+			c.JSON(http.StatusOK, "service denied")
+		} else {
+			println("register golang")
+			println("register worked")
+			c.JSON(http.StatusOK, respform2)
+		}
 	}
 }
 
