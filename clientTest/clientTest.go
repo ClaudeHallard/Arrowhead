@@ -187,6 +187,7 @@ func registerTest() {
 
 	body, _ := json.Marshal(serviceRegistryEntry)
 	sendPackage(body, "register", "POST")
+}
 
 func registerTestJava() {
 	serviceRegistryEntry := &ServiceRegistryEntryInput{
