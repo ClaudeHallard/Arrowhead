@@ -38,11 +38,35 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	return serviceQueryList
 }
 
+func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOutput {
+
+	stmt, err := db.Prepare("UPDATE Services SET (systemName, address, port, authenticationInfo, endOfValidity, secure, version, updatedAt) = (?,?,?,?,?,?,?,?) WHERE serviceDefinition = ? AND serviceURI = ?")
+
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	_, err = stmt.Exec(model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.EndOfvalidity, model.Secure, model.Version, currentTime, model.ServiceDefinition, model.ServiceUri)
+	if err != nil {
+		println(err.Error())
+		panic("Encounterd an error during registration while inserting service")
+	}
+
+	var cnt int64
+	_ = db.QueryRow(`select id from Services where serviceURI = ?`, model.ServiceUri).Scan(&cnt)
+	return &getServiceByID(cnt)[0]
+}
+
 // check for serviceURI AND / OR serviceDefinition
-func GetCount(servicedef string, serviceURI string) int {
+func GetCountUniqueURI(servicedef string, serviceURI string) int {
 	var cnt int
 	//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
 	_ = db.QueryRow(`select count(*) from Services where serviceURI = ?`, serviceURI).Scan(&cnt)
+	return cnt
+}
+
+// check for serviceURI AND / OR serviceDefinition
+func GetCountUpdate(servicedef string, serviceURI string) int {
+	var cnt int
+	//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
+	_ = db.QueryRow(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef).Scan(&cnt)
 	return cnt
 }
 
@@ -51,11 +75,17 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 	if !validityCheck(model.EndOfvalidity) {
 		return nil
-
 	}
+
 	// check if the service exist
-	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
+	if GetCountUniqueURI(model.ServiceDefinition, model.ServiceUri) > 0 {
+		if GetCountUpdate(model.ServiceDefinition, model.ServiceUri) > 0 {
+			println("Register worked, service updated")
+			return model.updateService() // update the service in the database
+
+		}
 		return nil
+
 	} else {
 
 		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
@@ -86,7 +116,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
 		}
 		handleError("failed to store: %v", err)
-
+		println("Register worked")
 		return &getServiceByID(lastId)[0]
 	}
 	//return nil
