@@ -14,8 +14,9 @@ func main() {
 	config := getConfig()
 	//OpenDatabase("file:registryDB.db?cache=private")
 	OpenDatabase("file:registryDB.db?cache=private&_foreign_keys=on")
-	go startValidityTimer(config.CleanDelay) //starts cleaning on ticks in background
-
+	if config.CleanEndOfValidity {
+		go startValidityTimer(config.CleanDelay) //starts cleaning on ticks in background
+	}
 	n := nano.New()
 
 	n.Use(nano.Recovery())
@@ -37,8 +38,9 @@ func main() {
 }
 
 type configJson struct {
-	Port       int `json:"port"`
-	CleanDelay int `json:"endofValidityCleaningCycle"`
+	Port               int  `json:"port"`
+	CleanEndOfValidity bool `json:"cleanEndOfValidity"`
+	CleanDelay         int  `json:"endofValidityCleaningCycle"`
 }
 
 func getConfig() configJson {
@@ -47,7 +49,9 @@ func getConfig() configJson {
 	if err != nil {
 		println("No config found. Using default parameters.")
 		config.Port = 4245
+		config.CleanEndOfValidity = true
 		config.CleanDelay = 10
+
 		dat, err := json.Marshal(config)
 		if err != nil {
 			panic(err.Error())

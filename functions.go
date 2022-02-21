@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -27,13 +28,16 @@ func handleError(message string, err error) {
 	}
 }
 
-// Register model.
-
+//Query
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	serviceQueryList := &ServiceQueryList{}
 	serviceQueryList.ServiceQueryData = getServiceByID(-1)
 	serviceQueryList.UnfilteredHits = len(serviceQueryList.ServiceQueryData)
 	serviceQueryList.serviceDefenitionFilter(*model)
+	if len(model.MetadataRequirements) > 0 {
+
+		serviceQueryList.metadataRequiermentFilter(*model)
+	}
 
 	return serviceQueryList
 }
@@ -137,17 +141,37 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	return false
 }
 
-func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryForm ServiceQueryForm) *ServiceQueryList {
+func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 
 	var queryHits []ServiceRegistryEntryOutput
-	for _, v := range serviceQueryList.ServiceQueryData {
-		if v.ServiceDefinition.ServiceDefinition == serviceQueryForm.ServiceDefinitionRequirement {
-			queryHits = append(queryHits, v)
+	for _, service := range serviceQueryList.ServiceQueryData {
+		if strings.Contains(service.ServiceDefinition.ServiceDefinition, serviceQueryForm.ServiceDefinitionRequirement) {
+
+			queryHits = append(queryHits, service)
 		}
 
 	}
 	serviceQueryList.ServiceQueryData = queryHits
-	return serviceQueryList
+	return
+
+}
+func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQueryForm ServiceQueryForm) {
+	var metadataHits []ServiceRegistryEntryOutput
+	for _, service := range serviceQueryList.ServiceQueryData {
+		mdReqHit := false
+		for _, md := range service.Metadata {
+			for _, mdReq := range serviceQueryForm.MetadataRequirements {
+				if strings.Contains(md, mdReq) {
+					mdReqHit = true
+				}
+			}
+		}
+		if mdReqHit {
+			metadataHits = append(metadataHits, service)
+		}
+	}
+	serviceQueryList.ServiceQueryData = metadataHits
+	return
 }
 
 //Function to get a specific or all services

@@ -1,1 +1,1 @@
-{"port":4245,"endofValidityCleaningCycle":10}
+{"port":4245,"cleanEndOfValidity":true,"endofValidityCleaningCycle":10}
