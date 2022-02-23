@@ -31,7 +31,7 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 		c.JSON(http.StatusOK, "service denied, service allready exist or bad payload")
 
 	} else {
-		c.JSON(http.StatusOK, respForm)
+		c.JSON(http.StatusCreated, respForm)
 	}
 }
 

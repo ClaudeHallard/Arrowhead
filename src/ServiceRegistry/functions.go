@@ -31,9 +31,9 @@ func handleError(message string, err error) {
 //Query
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	serviceQueryList := &ServiceQueryList{}
-	serviceQueryList.ServiceQueryData = getServiceByID(-1)
-	serviceQueryList.UnfilteredHits = len(serviceQueryList.ServiceQueryData)
-	serviceQueryList.serviceDefenitionFilter(*model)
+	//serviceQueryList.ServiceQueryData = getServiceByID(-1)
+	serviceQueryList.ServiceDefenitionFilter(*model)
+
 	if len(model.MetadataRequirements) > 0 {
 
 		serviceQueryList.metadataRequiermentFilter(*model)
@@ -97,11 +97,13 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		currentTime := time.Now().Format("2006-01-02 15:04:05")
 
 		res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
+		stmt.Close()
 		if err != nil {
 			println(err.Error())
 			panic("Encounterd an error during registration while inserting service")
 		}
 		lastId, err := res.LastInsertId()
+
 		handleError("failed to store: %v", err)
 		for _, v := range model.Metadata {
 			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
@@ -112,16 +114,57 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			_, err = stmt.Exec(lastId, v)
 
 		}
-
+		stmt.Close()
 		//loop through the interfaces array and add them to the table.
 		for _, v := range model.Interfaces {
 			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
 			handleError("could prepare statement: %v", err)
 			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
 		}
+		stmt.Close()
 		handleError("failed to store: %v", err)
 		println("Register worked")
-		return &getServiceByID(lastId)[0]
+
+		returnForm := ServiceRegistryEntryOutput{
+			ID: int(lastId),
+			ServiceDefinition: ServiceDefinition{
+				ID:                int(lastId),
+				ServiceDefinition: model.ServiceDefinition,
+				CreatedAt:         currentTime,
+				UpdatedAt:         currentTime,
+			},
+			Provider: Provider{
+				ID:                 int(lastId),
+				SystemName:         model.ProviderSystem.SystemName,
+				Address:            model.ProviderSystem.Address,
+				Port:               model.ProviderSystem.Port,
+				AuthenticationInfo: model.ProviderSystem.AuthenticationInfo,
+				CreatedAt:          currentTime,
+				UpdatedAt:          currentTime,
+			},
+			ServiceUri:    model.ServiceUri,
+			EndOfValidity: model.EndOfvalidity,
+			Secure:        model.Secure,
+			Metadata:      model.Metadata,
+			Version:       model.Version,
+			CreatedAt:     currentTime,
+			UpdatedAt:     currentTime,
+		}
+
+		interfaceArray := make([]Interface, len(model.Interfaces))
+		for i := 0; i < len(model.Interfaces); i++ {
+			interfaceArray[i] = Interface{
+				ID:            int(lastId),
+				InterfaceName: model.Interfaces[i],
+				CreatedAt:     currentTime,
+				UpdatedAt:     currentTime,
+			}
+		}
+		returnForm.Interfaces = interfaceArray
+
+		return &returnForm
+
+		//return &getServiceByID(lastId)[0]
 	}
 	//return nil
 }
@@ -140,8 +183,44 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	}
 	return false
 }
+func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
+	var queryHits []ServiceRegistryEntryOutput
 
-func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
+	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		var service ServiceRegistryEntryOutput
+		err := rows.Scan(&service.ID, &service.ServiceDefinition.ServiceDefinition, &service.ServiceDefinition.CreatedAt, &service.ServiceDefinition.UpdatedAt,
+			&service.Provider.SystemName, &service.Provider.Address, &service.Provider.Port, &service.Provider.AuthenticationInfo, &service.Provider.CreatedAt, &service.Provider.UpdatedAt,
+			&service.ServiceUri, &service.EndOfValidity, &service.Secure, &service.Version, &service.CreatedAt, &service.UpdatedAt)
+
+		//add things to other fields
+		if err != nil {
+			println(err.Error())
+			panic("Encounterd an error while quering the database for services")
+		}
+		if validityCheck(service.EndOfValidity) {
+
+			queryHits = append(queryHits, service)
+		}
+
+	}
+	defer rows.Close()
+	for i := 0; i < len(queryHits); i++ {
+		queryHits[i].Interfaces = getInterfaceByID(int64(queryHits[i].ID))
+		_, queryHits[i].Metadata = getMetadataByID(int64(queryHits[i].ID))
+	}
+
+	println(len(queryHits[0].Metadata))
+	serviceQueryList.ServiceQueryData = queryHits
+	serviceQueryList.UnfilteredHits = len(queryHits)
+
+	return
+
+}
+func (serviceQueryList *ServiceQueryList) oldserviceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 
 	var queryHits []ServiceRegistryEntryOutput
 	for _, service := range serviceQueryList.ServiceQueryData {
@@ -176,6 +255,8 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 
 //Function to get a specific or all services
 func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then all services will be retured
+	//var err error
+
 	var serviceList []ServiceRegistryEntryOutput
 	//Get the interfaces
 	var interfaces = getInterfaceByID(id)
@@ -252,6 +333,7 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 
 	}
 	defer rows.Close()
+
 	return interfaces
 }
 
@@ -261,6 +343,7 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 	var metaData []string
 	var rows *sql.Rows
 	var err error
+
 	if 0 <= id {
 		rows, err = db.Query("SELECT serviceID, metaData  FROM MetaData WHERE serviceID = ?", id)
 	} else {
@@ -284,6 +367,7 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 
 	}
 	defer rows.Close()
+
 	return serviceID, metaData
 }
 func deleteByID(id int) {
