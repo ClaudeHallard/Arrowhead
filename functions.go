@@ -103,7 +103,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		}
 		lastId, err := res.LastInsertId()
 		handleError("failed to store: %v", err)
-		for _, v := range model.Metadata {
+		for _, v := range model.MetadataGo {
 			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
 			if err != nil {
 				println(err.Error())
@@ -123,7 +123,67 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		println("Register worked")
 		return &getServiceByID(lastId)[0]
 	}
-	//return nil
+	return nil
+}
+
+// function to store the register input. Looping through struct instead of string array.
+func (model *ServiceRegistryEntryInput) SaveJava() *ServiceRegistryEntryOutput {
+
+	// check if the service exist
+	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
+
+	} else {
+
+		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+		currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+		res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
+		println("hit")
+		if err != nil {
+			println(err.Error())
+			panic("Encounterd an error during registration while inserting service")
+		}
+		lastId, err := res.LastInsertId()
+		handleError("failed to store: %v", err)
+
+		// Insert metadata
+		stmt1, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
+		metadata1 := model.MetadataJava.AdditionalProp1
+		println(model.MetadataJava.AdditionalProp1)
+		print("hej")
+		if len(metadata1) == 0 {
+			println("No metadata1")
+		} else {
+			_, err = stmt1.Exec(lastId, metadata1)
+
+			stmt2, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
+			metadata2 := model.MetadataJava.AdditionalProp2
+			if len(metadata2) > 0 && err == nil {
+				_, err = stmt2.Exec(lastId, metadata2)
+			} else {
+				println("No metadata2")
+			}
+
+			stmt3, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
+			metadata3 := model.MetadataJava.AdditionalProp3
+			if len(metadata3) > 0 && err == nil {
+				_, err = stmt3.Exec(lastId, metadata2)
+			} else {
+				println("No metadata3")
+			}
+		}
+
+		//loop through the interfaces array and add them to the table.
+		for _, v := range model.Interfaces {
+			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
+			handleError("could prepare statement: %v", err)
+			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
+		}
+		handleError("failed to store: %v", err)
+
+		return &getServiceByID(lastId)[0]
+	}
+	return nil
 }
 
 // Function to delete a service and the assosiated data
@@ -144,10 +204,18 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 func (serviceQueryList *ServiceQueryList) serviceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 
 	var queryHits []ServiceRegistryEntryOutput
-	for _, service := range serviceQueryList.ServiceQueryData {
-		if strings.Contains(service.ServiceDefinition.ServiceDefinition, serviceQueryForm.ServiceDefinitionRequirement) {
-
-			queryHits = append(queryHits, service)
+	for _, v := range serviceQueryList.ServiceQueryData {
+		if v.ServiceDefinition.ServiceDefinition == serviceQueryForm.ServiceDefinitionRequirement {
+			if len(v.MetadataGo) >= 1 {
+				v.MetadataJava.AdditionalProp1 = v.MetadataGo[0]
+			}
+			if len(v.MetadataGo) >= 2 {
+				v.MetadataJava.AdditionalProp2 = v.MetadataGo[1]
+			}
+			if len(v.MetadataGo) >= 3 {
+				v.MetadataJava.AdditionalProp3 = v.MetadataGo[2]
+			}
+			queryHits = append(queryHits, v)
 		}
 
 	}
@@ -206,24 +274,22 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 			println(err.Error())
 			panic("Encounterd an error while quering the database for services")
 		}
-		if validityCheck(service.EndOfValidity) {
-			for i := 0; i < len(metaData); i++ {
-
-				if service.ID == metaServiceID[i] {
-					service.Metadata = append(service.Metadata, metaData[i])
-				}
+		//var counter = 0
+		for i := 0; i < len(metaData); i++ {
+			if service.ID == metaServiceID[i] {
+				service.MetadataGo = append(service.MetadataGo, metaData[i])
 			}
-			for _, v := range interfaces {
-				if service.ID == v.ID {
-					service.Interfaces = append(service.Interfaces, v)
-				}
+		}
+
+		for _, v := range interfaces {
+			if service.ID == v.ID {
+				service.Interfaces = append(service.Interfaces, v)
 			}
 
 			serviceList = append(serviceList, service)
 		}
 
 	}
-
 	defer rows.Close()
 	return serviceList
 }
