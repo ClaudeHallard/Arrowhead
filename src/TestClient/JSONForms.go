@@ -1,4 +1,4 @@
-package TestClient
+package main
 
 //Shared Structs
 
@@ -6,9 +6,9 @@ package TestClient
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
 type MetadataStruct struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
+	AdditionalProp1 string `json:"additionalProp1,omitempty"`
+	AdditionalProp2 string `json:"additionalProp2,omitempty"`
+	AdditionalProp3 string `json:"additionalProp3,omitempty"`
 }
 
 type ServiceDefinition struct {

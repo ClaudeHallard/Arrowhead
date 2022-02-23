@@ -1,4 +1,4 @@
-package TestClient
+package main
 
 import (
 	"bytes"
@@ -11,22 +11,24 @@ import (
 )
 
 func main() {
-	convert = false //Set to true to convert from metadata array to struct
-	println("Converting when sending: " + strconv.FormatBool(convert))
+	java = false //Set to true for java version
+	println("Converting when sending: " + strconv.FormatBool(java))
 
 	//preformTests("echo", 100, 0) // preform 100 echo calls
 	//preformTests("query", 10000, 40) //preforms 100 querys
+	//_, td := SendRequest(createUnregisterRequestJava(101, "31.208.108.251:42454"))
 
-	preformTests("register", 5, 100) //registers 5 services, starting at index 100
-	//preformTests("unregister", 5, 100) // unregisters 5 services, starting at index 100
+	//createUnregisterRequestJava()
+	//preformTests("register", 5, 110) //registers 5 services, starting at index 100
+	preformTests("unregister", 1, 100) // unregisters 5 services, starting at index 100
 }
 
-var convert bool //Set to true to convert from metadata array to struct
+var java bool //Set to true to convert from metadata array to struct
 
 // asdasdasd
 func (metadata Metadata) MarshalJSON() ([]byte, error) {
 	metadataStruct := MetadataStruct{}
-	if convert {
+	if java {
 		if len(metadata) >= 1 {
 			metadataStruct.AdditionalProp1 = metadata[0]
 		}
@@ -113,10 +115,16 @@ func SendRequest(req *http.Request) ([]byte, testData) {
 }
 func preformTests(testType string, amount int, start int) {
 	var totalTime time.Duration
-	//address := "192.168.0.119:8443" //java version
-	//address := "192.168.0.119:4245" //golang version
-	address := "localhost:4245" //golang version
-	//change convert depending on address
+	var address string
+	if java {
+		address = "31.208.108.251:42454"
+	} else {
+		address = "31.208.108.251:4245"
+	}
+	//address := "31.208.108.251:42454" //java version
+	//address = "31.208.108.251:4245" //golang version
+	//address := "localhost:4245" //golang version
+
 	switch typeSwitch := testType; typeSwitch {
 	case "query":
 		for i := 0; i < amount; i++ {
@@ -190,7 +198,7 @@ func createRegisterRequest(i int, address string) *http.Request {
 }
 func createQueryRequest(i int, address string) *http.Request {
 	serviceQueryForm := ServiceQueryForm{
-		ServiceDefinitionRequirement: "testsd" + strconv.Itoa(i),
+		ServiceDefinitionRequirement: "TestSD" + strconv.Itoa(i),
 		InterfaceRequirements:        []string{},
 		SecurityRequirements:         []string{},
 		MetadataRequirements:         MetadataStruct{},
@@ -209,39 +217,23 @@ func createQueryRequest(i int, address string) *http.Request {
 
 	return req
 }
+
 func createUnregisterRequest(i int, address string) *http.Request {
-	println("test")
-	serviceRegistryEntry := &ServiceRegistryEntryInput{
-		ServiceDefinition: "TestSD" + strconv.Itoa(i),
-		ProviderSystem: ProviderSystem{
-			SystemName:         "string",
-			Address:            "string",
-			Port:               0,
-			AuthenticationInfo: "string",
-		},
-		ServiceUri:    "TestSUri" + strconv.Itoa(i),
-		EndOfvalidity: "2025-04-14T11:07:36.639Z",
-		//EndOfvalidity: "2002-04-14T11:07:36.639Z", // test for an invalid date
-		Secure: "NOT_SECURE",
-		Metadata: []string{
-			"metadata1",
-			"metadata2",
-			"metadata3",
-		},
+	req, _ := http.NewRequest("DELETE", "http://"+address+"/serviceregistry/unregister", nil)
+	q := req.URL.Query()
+	q.Add("address", "string")
+	q.Add("port", "0")
+	q.Add("service_definition", "TestSD"+strconv.Itoa(i))
+	q.Add("service_uri", "TestSUri"+strconv.Itoa(i))
+	q.Add("system_name", "string")
+	req.URL.RawQuery = q.Encode()
 
-		Version: 0,
-		Interfaces: []string{
-			"HTTP-SECURE-JSON",
-		},
-	}
-	body, _ := json.Marshal(serviceRegistryEntry)
-	println("Sending: " + string(body))
-	req, err := http.NewRequest("DELETE", "http://"+address+"/serviceregistry/unregister", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	if err != nil {
-		panic(err.Error())
-	}
+	fmt.Println(req.URL.String())
 
+	//client := &http.Client{}
+	//println(r.Header)
+	//resp, _ := client.Do(req)
+	//fmt.Println(resp.Status)
 	return req
 }
 

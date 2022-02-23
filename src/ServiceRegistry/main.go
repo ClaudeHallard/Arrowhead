@@ -29,7 +29,6 @@ func StartServiceRegistry() {
 	n.POST("/serviceregistry/query", method.Query)
 	n.POST("/serviceregistry/register", method.Store)
 	n.DELETE("/serviceregistry/unregister", method.Unregister)
-
 	log.Println("server running at port: " + strconv.Itoa(config.Port))
 
 	err := n.Run(":" + strconv.Itoa(config.Port))

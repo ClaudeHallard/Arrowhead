@@ -2,6 +2,7 @@ package ServiceRegistry
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/hariadivicky/nano"
 )
@@ -46,12 +47,29 @@ func (ctrl *JsonFile) Query(c *nano.Context) {
 }
 
 // route: DELETE serviceregistry/unregister
-func (ctrl *JsonFile) Unregister(c *nano.Context) {
+func (ctrl *JsonFile) UnregisterOld(c *nano.Context) {
 	serviceRegistryEntry := ServiceRegistryEntryInput{}
 	c.BindJSON(&serviceRegistryEntry)
-	println(("test hetr"))
+
 	deleted := serviceRegistryEntry.Delete()
-	println("delete worked")
+	println("Got delete request")
+	if deleted {
+		c.JSON(http.StatusOK, "Deleted: OK")
+	} else {
+		c.JSON(http.StatusNotFound, "Deleted FAILED")
+
+	}
+
+}
+func (ctrl *JsonFile) Unregister(c *nano.Context) {
+	serviceRegistryEntry := ServiceRegistryEntryInput{}
+	serviceRegistryEntry.ProviderSystem.Address = c.Query("address")
+	serviceRegistryEntry.ProviderSystem.Port, _ = strconv.Atoi(c.Query("port"))
+	serviceRegistryEntry.ServiceDefinition = c.Query("service_definition")
+	serviceRegistryEntry.ServiceUri = c.Query("service_uri")
+	serviceRegistryEntry.ProviderSystem.SystemName = c.Query("system_name")
+	deleted := serviceRegistryEntry.Delete()
+	println("Got delete request")
 	if deleted {
 		c.JSON(http.StatusOK, "Deleted: OK")
 	} else {
