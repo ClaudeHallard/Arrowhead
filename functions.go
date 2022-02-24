@@ -34,9 +34,13 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	serviceQueryList.ServiceQueryData = getServiceByID(-1)
 	serviceQueryList.UnfilteredHits = len(serviceQueryList.ServiceQueryData)
 	serviceQueryList.serviceDefenitionFilter(*model)
-	if len(model.MetadataRequirements) > 0 {
+	if serviceQueryList.ServiceQueryData[0].MetadataJava.AdditionalProp1 == "" {
+		if len(model.MetadataRequirements) > 0 {
+			serviceQueryList.metadataRequiermentFilter(*model)
 
-		serviceQueryList.metadataRequiermentFilter(*model)
+		} else {
+			serviceQueryList.metadataRequiermentFilterJava(*model)
+		}
 	}
 
 	return serviceQueryList
@@ -128,9 +132,14 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 // function to store the register input. Looping through struct instead of string array.
 func (model *ServiceRegistryEntryInput) SaveJava() *ServiceRegistryEntryOutput {
+	// Check if service exists
+	if GetCountUniqueURI(model.ServiceDefinition, model.ServiceUri) > 0 {
+		if GetCountUpdate(model.ServiceDefinition, model.ServiceUri) > 0 {
+			println("Register worked, service updated")
+			return model.updateService() // update the service in the database
 
-	// check if the service exist
-	if GetCount(model.ServiceDefinition, model.ServiceUri) > 0 {
+		}
+		return nil
 
 	} else {
 
@@ -227,11 +236,33 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 	var metadataHits []ServiceRegistryEntryOutput
 	for _, service := range serviceQueryList.ServiceQueryData {
 		mdReqHit := false
-		for _, md := range service.Metadata {
+		for _, md := range service.MetadataGo {
 			for _, mdReq := range serviceQueryForm.MetadataRequirements {
 				if strings.Contains(md, mdReq) {
 					mdReqHit = true
 				}
+			}
+		}
+		if mdReqHit {
+			metadataHits = append(metadataHits, service)
+		}
+	}
+	serviceQueryList.ServiceQueryData = metadataHits
+	return
+}
+func (serviceQueryList *ServiceQueryList) metadataRequiermentFilterJava(serviceQueryForm ServiceQueryForm) {
+	var metadataHits []ServiceRegistryEntryOutput
+	for _, service := range serviceQueryList.ServiceQueryData {
+		mdReqHit := false
+		for _, mdReq := range serviceQueryForm.MetadataRequirements {
+			if strings.Contains(service.MetadataJava.AdditionalProp1, mdReq) {
+				mdReqHit = true
+			}
+			if strings.Contains(service.MetadataJava.AdditionalProp2, mdReq) {
+				mdReqHit = true
+			}
+			if strings.Contains(service.MetadataJava.AdditionalProp3, mdReq) {
+				mdReqHit = true
 			}
 		}
 		if mdReqHit {

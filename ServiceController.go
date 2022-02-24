@@ -26,7 +26,6 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 	c.BindJSON(&ServiceRegistryEntry)
 
 	// If there is any metadata in struct --> run saveJava
-	println(ServiceRegistryEntry.MetadataJava.AdditionalProp1 + "hej")
 	if ServiceRegistryEntry.MetadataJava.AdditionalProp1 != "" {
 		respform1 := ServiceRegistryEntry.SaveJava() // måste kolla struct istället
 		println(ServiceRegistryEntry.MetadataJava.AdditionalProp1)
@@ -40,9 +39,6 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 			c.JSON(http.StatusOK, respform1)
 		}
 	} else {
-<<<<<<< HEAD
-		c.JSON(http.StatusOK, respForm)
-=======
 
 		respform2 := ServiceRegistryEntry.Save()
 		if respform2 == nil {
@@ -54,7 +50,6 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 			println("register worked")
 			c.JSON(http.StatusOK, respform2)
 		}
->>>>>>> compatibletesting
 	}
 }
 
