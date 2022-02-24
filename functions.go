@@ -176,7 +176,7 @@ func (model *ServiceRegistryEntryInput) SaveJava() *ServiceRegistryEntryOutput {
 			stmt3, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
 			metadata3 := model.MetadataJava.AdditionalProp3
 			if len(metadata3) > 0 && err == nil {
-				_, err = stmt3.Exec(lastId, metadata2)
+				_, err = stmt3.Exec(lastId, metadata3)
 			} else {
 				println("No metadata3")
 			}
