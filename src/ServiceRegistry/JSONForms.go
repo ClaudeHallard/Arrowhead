@@ -71,14 +71,15 @@ type ServiceRegistryEntryOutput struct {
 
 //ServiceQueryForm
 type ServiceQueryForm struct {
-	ServiceDefinitionRequirement string   `json:"serviceDefinitionRequirement"`
-	InterfaceRequirements        []string `json:"interfaceRequirements"`
-	SecurityReRequirements       []string `json:"securityRequirements"`
-	MetadataRequirements         []string `json:"metadataRequirements"`
-	VersionRequirements          int      `json:"versionRequirement"`
-	MaxVersionRequirements       int      `json:"maxVersionRequirement"`
-	MinVersionRequirements       int      `json:"minVersionRequirement"`
-	PingProviders                bool     `json:"pingProviders"`
+	ServiceDefinitionRequirement string       `json:"serviceDefinitionRequirement"`
+	InterfaceRequirements        []string     `json:"interfaceRequirements"`
+	SecurityRequirements         []string     `json:"securityRequirements"`
+	MetadataRequirementsGo       []string     `json:"metadataRequirementsGo"`
+	MetadataRequirementsJava     MetadataJava `json:"metadataRequirements"`
+	VersionRequirements          int          `json:"versionRequirement"`
+	MaxVersionRequirements       int          `json:"maxVersionRequirement"`
+	MinVersionRequirements       int          `json:"minVersionRequirement"`
+	PingProviders                bool         `json:"pingProviders"`
 }
 
 //ServiceQueryList

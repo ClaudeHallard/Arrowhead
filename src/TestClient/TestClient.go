@@ -14,8 +14,8 @@ import (
 func main() {
 	java = true //Set to true for java version
 	//preformTests("echo", 100, 0)
-	//preformTests("register", 1, 2)
-	//preformTests("query", 10000, 40) //preforms 100 querys
+	//preformTests("register", 1, 1)
+	//preformTests("query", 1, 1) //preforms 100 querys
 	//preformTests("unregister", 1, 1)
 
 	amount := 2
@@ -208,13 +208,13 @@ func createRegisterRequest(i int, address string) *http.Request {
 		EndOfvalidity: "2025-04-14T11:07:36.639Z",
 		//EndOfvalidity: "2002-04-14T11:07:36.639Z", // test for an invalid date
 		Secure: "NOT_SECURE",
-		/*
-			MetadataJava: MetadataJava{
-				AdditionalProp1: "metadata1",
-				AdditionalProp2: "metadata3",
-				AdditionalProp3: "metadata3",
-			},
-		*/
+
+		MetadataJava: MetadataJava{
+			AdditionalProp1: "metadata1",
+			AdditionalProp2: "metadata3",
+			AdditionalProp3: "metadata3",
+		},
+
 		MetadataGo: []string{
 			"metadata1",
 			"metadata2",
@@ -243,7 +243,8 @@ func createQueryRequest(i int, address string) *http.Request {
 		ServiceDefinitionRequirement: "TestSD1",
 		InterfaceRequirements:        []string{},
 		SecurityRequirements:         []string{},
-		MetadataRequirements:         []string{},
+		MetadataRequirementsGo:       []string{},
+		MetadataRequirementsJava:     MetadataJava{},
 		VersionRequirements:          0,
 		MaxVersionRequirements:       0,
 		MinVersionRequirements:       0,

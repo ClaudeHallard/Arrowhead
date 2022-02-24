@@ -31,12 +31,15 @@ func handleError(message string, err error) {
 
 //Query
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
-
+	if len(model.MetadataRequirementsGo) == 0 {
+		println("converting")
+		model.MetadataRequirementsGo = convertToArrayFromStruct(model.MetadataRequirementsJava)
+	}
 	serviceQueryList := &ServiceQueryList{}
 	//serviceQueryList.ServiceQueryData = getServiceByID(-1)
 	serviceQueryList.ServiceDefenitionFilter(*model)
 
-	if len(model.MetadataRequirements) > 0 {
+	if len(model.MetadataRequirementsGo) > 0 {
 
 		serviceQueryList.metadataRequiermentFilter(*model)
 	}
@@ -249,7 +252,7 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 	for _, service := range serviceQueryList.ServiceQueryData {
 		mdReqHit := false
 		for _, md := range service.MetadataGo {
-			for _, mdReq := range serviceQueryForm.MetadataRequirements {
+			for _, mdReq := range serviceQueryForm.MetadataRequirementsGo {
 				if strings.Contains(md, mdReq) {
 					mdReqHit = true
 				}
