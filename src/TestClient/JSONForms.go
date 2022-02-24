@@ -5,7 +5,7 @@ package main
 //Metadata scruct, used by
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
-type MetadataStruct struct {
+type MetadataJava struct {
 	AdditionalProp1 string `json:"additionalProp1,omitempty"`
 	AdditionalProp2 string `json:"additionalProp2,omitempty"`
 	AdditionalProp3 string `json:"additionalProp3,omitempty"`
@@ -41,7 +41,8 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	Metadata          Metadata       `json:"metadata"`
+	MetadataJava      MetadataJava   `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
@@ -51,7 +52,6 @@ type ProviderSystem struct {
 	Port               int    `json:"port"`
 	AuthenticationInfo string `json:"authenticationInfo"`
 }
-type Metadata []string
 
 // ServiceRegistryEntry Output Version
 type ServiceRegistryEntryOutput struct {
@@ -61,7 +61,8 @@ type ServiceRegistryEntryOutput struct {
 	ServiceUri        string            `json:"serviceUri"`
 	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"secure"`
-	Metadata          Metadata          `json:"metadata"`
+	MetadataJava      MetadataJava      `json:"metadata"`
+	MetadataGo        []string          `json:"metadataGo"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
 	CreatedAt         string            `json:"createdAt"`
@@ -70,14 +71,14 @@ type ServiceRegistryEntryOutput struct {
 
 //ServiceQueryForm
 type ServiceQueryForm struct {
-	ServiceDefinitionRequirement string         `json:"serviceDefinitionRequirement"`
-	InterfaceRequirements        []string       `json:"interfaceRequirements"`
-	SecurityRequirements         []string       `json:"securityRequirements"`
-	MetadataRequirements         MetadataStruct `json:"metadataRequirements"`
-	VersionRequirements          int            `json:"versionRequirement"`
-	MaxVersionRequirements       int            `json:"maxVersionRequirement"`
-	MinVersionRequirements       int            `json:"minVersionRequirement"`
-	PingProviders                bool           `json:"pingProviders"`
+	ServiceDefinitionRequirement string   `json:"serviceDefinitionRequirement"`
+	InterfaceRequirements        []string `json:"interfaceRequirements"`
+	SecurityRequirements         []string `json:"securityRequirements"`
+	MetadataRequirements         []string `json:"metadataRequirements"`
+	VersionRequirements          int      `json:"versionRequirement"`
+	MaxVersionRequirements       int      `json:"maxVersionRequirement"`
+	MinVersionRequirements       int      `json:"minVersionRequirement"`
+	PingProviders                bool     `json:"pingProviders"`
 }
 
 // Test  func.

@@ -5,7 +5,7 @@ package ServiceRegistry
 //Metadata scruct, used by
 //ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
 // ServiceQueryForm and ServiceQueryList.
-type MetadataOld struct {
+type MetadataJava struct {
 	AdditionalProp1 string `json:"additionalProp1"`
 	AdditionalProp2 string `json:"additionalProp2"`
 	AdditionalProp3 string `json:"additionalProp3"`
@@ -41,7 +41,8 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	Metadata          []string       `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
+	MetadataJava      MetadataJava   `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
@@ -60,7 +61,8 @@ type ServiceRegistryEntryOutput struct {
 	ServiceUri        string            `json:"serviceUri"`
 	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"secure"`
-	Metadata          []string          `json:"metadata"`
+	MetadataGo        []string          `json:"metadataGo"`
+	MetadataJava      MetadataJava      `json:"metadata"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
 	CreatedAt         string            `json:"createdAt"`

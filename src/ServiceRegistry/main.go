@@ -13,8 +13,8 @@ import (
 func StartServiceRegistry() {
 
 	config := getConfig()
-	//OpenDatabase("file:registryDB.db?cache=shared&mode=rwc&_foreign_keys=on&_journal_mode=WAL")
-	OpenDatabase("file:registryDB.db?cache=private&mode=rwc&_foreign_keys=on")
+
+	OpenDatabase("file:ServiceRegistry/database/registryDB.db?cache=private&mode=rwc&_foreign_keys=on")
 	if config.CleanEndOfValidity {
 		go startValidityTimer(config.CleanDelay) //starts cleaning on ticks in background
 	}
@@ -27,7 +27,6 @@ func StartServiceRegistry() {
 
 	n.GET("/serviceregistry/echo", method.Echo)
 	n.POST("/serviceregistry/query", method.Query)
-	//http.HandleFunc("/serviceregistry/register", Store2)
 	n.POST("/serviceregistry/register", method.Store)
 	n.DELETE("/serviceregistry/unregister", method.Unregister)
 	log.Println("server running at port: " + strconv.Itoa(config.Port))

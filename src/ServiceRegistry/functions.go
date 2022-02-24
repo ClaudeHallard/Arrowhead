@@ -14,8 +14,9 @@ var db *sql.DB
 func OpenDatabase(dsn string) {
 	var err error
 	db, err = sql.Open("sqlite3", dsn)
-
-	handleError("could not open database: %v", err)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	if err := db.Ping(); err != nil {
 		log.Fatalf("could not connect to database: %v", err)
@@ -30,6 +31,7 @@ func handleError(message string, err error) {
 
 //Query
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
+
 	serviceQueryList := &ServiceQueryList{}
 	//serviceQueryList.ServiceQueryData = getServiceByID(-1)
 	serviceQueryList.ServiceDefenitionFilter(*model)
@@ -37,6 +39,9 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	if len(model.MetadataRequirements) > 0 {
 
 		serviceQueryList.metadataRequiermentFilter(*model)
+	}
+	for i := 0; i < len(serviceQueryList.ServiceQueryData); i++ {
+		serviceQueryList.ServiceQueryData[i].MetadataJava = convertToStructFromArray(serviceQueryList.ServiceQueryData[i].MetadataGo)
 	}
 
 	return serviceQueryList
@@ -46,7 +51,7 @@ func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOut
 
 	stmt, err := db.Prepare("UPDATE Services SET (systemName, address, port, authenticationInfo, endOfValidity, secure, version, updatedAt) = (?,?,?,?,?,?,?,?) WHERE serviceDefinition = ? AND serviceURI = ?")
 
-	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	currentTime := time.Now().Format("2006-01-02T15:04:051Z")
 	_, err = stmt.Exec(model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.EndOfvalidity, model.Secure, model.Version, currentTime, model.ServiceDefinition, model.ServiceUri)
 	if err != nil {
 		println(err.Error())
@@ -80,6 +85,10 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 	if !validityCheck(model.EndOfvalidity) {
 		return nil
 	}
+	if len(model.MetadataGo) == 0 {
+		println("converting")
+		model.MetadataGo = convertToArrayFromStruct(model.MetadataJava)
+	}
 
 	// check if the service exist
 	if GetCountUniqueURI(model.ServiceDefinition, model.ServiceUri) > 0 {
@@ -94,7 +103,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
 
-		currentTime := time.Now().Format("2006-01-02 15:04:05")
+		currentTime := time.Now().Format("2006-01-02T15:04:05.000Z")
 
 		res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
 		stmt.Close()
@@ -105,7 +114,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		lastId, err := res.LastInsertId()
 
 		handleError("failed to store: %v", err)
-		for _, v := range model.Metadata {
+		for _, v := range model.MetadataGo {
 			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
 			if err != nil {
 				println(err.Error())
@@ -145,7 +154,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			ServiceUri:    model.ServiceUri,
 			EndOfValidity: model.EndOfvalidity,
 			Secure:        model.Secure,
-			Metadata:      model.Metadata,
+			MetadataGo:    model.MetadataGo,
 			Version:       model.Version,
 			CreatedAt:     currentTime,
 			UpdatedAt:     currentTime,
@@ -161,7 +170,8 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			}
 		}
 		returnForm.Interfaces = interfaceArray
-
+		//println(len(model.MetadataGo))
+		returnForm.MetadataJava = convertToStructFromArray(returnForm.MetadataGo)
 		return &returnForm
 
 		//return &getServiceByID(lastId)[0]
@@ -210,10 +220,10 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 	defer rows.Close()
 	for i := 0; i < len(queryHits); i++ {
 		queryHits[i].Interfaces = getInterfaceByID(int64(queryHits[i].ID))
-		_, queryHits[i].Metadata = getMetadataByID(int64(queryHits[i].ID))
+		_, queryHits[i].MetadataGo = getMetadataByID(int64(queryHits[i].ID))
 	}
 
-	println(len(queryHits[0].Metadata))
+	println(len(queryHits[0].MetadataGo))
 	serviceQueryList.ServiceQueryData = queryHits
 	serviceQueryList.UnfilteredHits = len(queryHits)
 
@@ -238,7 +248,7 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 	var metadataHits []ServiceRegistryEntryOutput
 	for _, service := range serviceQueryList.ServiceQueryData {
 		mdReqHit := false
-		for _, md := range service.Metadata {
+		for _, md := range service.MetadataGo {
 			for _, mdReq := range serviceQueryForm.MetadataRequirements {
 				if strings.Contains(md, mdReq) {
 					mdReqHit = true
@@ -291,7 +301,7 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 			for i := 0; i < len(metaData); i++ {
 
 				if service.ID == metaServiceID[i] {
-					service.Metadata = append(service.Metadata, metaData[i])
+					service.MetadataGo = append(service.MetadataGo, metaData[i])
 				}
 			}
 			for _, v := range interfaces {
@@ -383,9 +393,16 @@ func cleanPastValidityDate() {
 	var pastValidityServices []int
 	var id int
 	var endOfValidity string
+
 	rows, err := db.Query("SELECT id, endOfValidity FROM Services")
-	handleError("query failed: %v", err)
+
+	if err != nil {
+
+		panic(err.Error())
+	}
+
 	for rows.Next() {
+
 		err := rows.Scan(&id, &endOfValidity)
 		handleError("query failed: %v", err)
 		if !validityCheck(endOfValidity) {
@@ -419,4 +436,33 @@ func startValidityTimer(minutes int) {
 
 		cleanPastValidityDate()
 	}
+}
+func convertToArrayFromStruct(metadataJava MetadataJava) []string {
+	var stringArr []string
+	if metadataJava.AdditionalProp1 != "" {
+		stringArr = append(stringArr, metadataJava.AdditionalProp1)
+	}
+	if metadataJava.AdditionalProp2 != "" {
+		stringArr = append(stringArr, metadataJava.AdditionalProp2)
+	}
+	if metadataJava.AdditionalProp3 != "" {
+		stringArr = append(stringArr, metadataJava.AdditionalProp3)
+	}
+	return stringArr
+}
+func convertToStructFromArray(metadata []string) MetadataJava {
+	metadataJava := MetadataJava{}
+
+	if len(metadata) >= 1 {
+		println("inside")
+		metadataJava.AdditionalProp1 = metadata[0]
+	}
+	if len(metadata) >= 2 {
+		metadataJava.AdditionalProp2 = metadata[1]
+	}
+	if len(metadata) >= 3 {
+		metadataJava.AdditionalProp3 = metadata[2]
+	}
+	return metadataJava
+
 }

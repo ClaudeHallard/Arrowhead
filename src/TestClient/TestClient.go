@@ -12,32 +12,32 @@ import (
 )
 
 func main() {
-	java = false //Set to true for java version
+	java = true //Set to true for java version
 	//preformTests("echo", 100, 0)
-	//preformTests("register", 30, 1)
-	//preformTests("unregister", 3, 1)
-	//preformTests("echo", 100, 0) // preform 100 echo calls
+	//preformTests("register", 1, 2)
 	//preformTests("query", 10000, 40) //preforms 100 querys
-	//_, td := SendRequest(createUnregisterRequestJava(101, "31.208.108.251:42454")
-	println("Golang")
-	amount := 1000
+	//preformTests("unregister", 1, 1)
+
+	amount := 2
 	start := 1
-	testResult1 := preformTestAll(amount, start)
+	java = false //Set to true for java version
+	println("Golang")
+
+	testGoA := preformTestAll(amount, start)
+
 	println("Java")
 	java = true
-	testResult2 := preformTestAll(amount, start)
-	testResult1.printResults()
-	testResult2.printResults()
-
-	//createUnregisterRequestJava()
-	//preformTests("register", 5, 110) //registers 5 services, starting at index 100
-	//preformTests("unregister", 20, 90) // unregisters 5 services, starting at index 100
+	testJava := preformTestAll(amount, start)
+	testGoA.printResults()
+	testJava.printResults()
+	fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
 
 }
 
 var java bool //Set to true to convert from metadata array to struct
 
 // asdasdasd
+/*
 func (metadata Metadata) MarshalJSON() ([]byte, error) {
 	metadataStruct := MetadataStruct{}
 	if java {
@@ -94,7 +94,7 @@ func (metadata *Metadata) UnmarshalJSON(data []byte) error {
 	//*metadata = append(stringArray)
 	return nil
 }
-
+*/
 type testData struct {
 	status      string
 	elapsedTime time.Duration
@@ -208,7 +208,14 @@ func createRegisterRequest(i int, address string) *http.Request {
 		EndOfvalidity: "2025-04-14T11:07:36.639Z",
 		//EndOfvalidity: "2002-04-14T11:07:36.639Z", // test for an invalid date
 		Secure: "NOT_SECURE",
-		Metadata: []string{
+		/*
+			MetadataJava: MetadataJava{
+				AdditionalProp1: "metadata1",
+				AdditionalProp2: "metadata3",
+				AdditionalProp3: "metadata3",
+			},
+		*/
+		MetadataGo: []string{
 			"metadata1",
 			"metadata2",
 			"metadata3",
@@ -233,10 +240,10 @@ func createRegisterRequest(i int, address string) *http.Request {
 func createQueryRequest(i int, address string) *http.Request {
 	serviceQueryForm := ServiceQueryForm{
 		//ServiceDefinitionRequirement: "TestSD" + strconv.Itoa(i),
-		ServiceDefinitionRequirement: "TestSD101",
+		ServiceDefinitionRequirement: "TestSD1",
 		InterfaceRequirements:        []string{},
 		SecurityRequirements:         []string{},
-		MetadataRequirements:         MetadataStruct{},
+		MetadataRequirements:         []string{},
 		VersionRequirements:          0,
 		MaxVersionRequirements:       0,
 		MinVersionRequirements:       0,
@@ -310,9 +317,9 @@ type combinedTestResult struct {
 
 func (cTR combinedTestResult) printResults() {
 	fmt.Printf("Java version: %t\n", cTR.java)
-	fmt.Printf("Echo total time: %s, 			succes count: %d \n", cTR.echoTime, cTR.echoSuccesCount)
-	fmt.Printf("Query total time: %s, 			succes count: %d \n", cTR.queryTime, cTR.querySuccesCount)
-	fmt.Printf("Register total time: %s, 		succes count: %d \n", cTR.registerTime, cTR.registerSuccesCount)
-	fmt.Printf("Unregister total time: %s, 		succes count: %d \n", cTR.unregisterTime, cTR.unregisterSuccesCount)
-	fmt.Printf("Combined total time: %s, 		total succes count: %d \n", cTR.totalTime, cTR.totalSuccesCount)
+	fmt.Printf("Echo total time: %s, 				Succes count: %d \n", cTR.echoTime, cTR.echoSuccesCount)
+	fmt.Printf("Query total time: %s, 				Succes count: %d \n", cTR.queryTime, cTR.querySuccesCount)
+	fmt.Printf("Register total time: %s, 			Success count: %d \n", cTR.registerTime, cTR.registerSuccesCount)
+	fmt.Printf("Unregister total time: %s, 			success count: %d \n", cTR.unregisterTime, cTR.unregisterSuccesCount)
+	fmt.Printf("Combined total time: %s, 			Total success count: %d \n", cTR.totalTime, cTR.totalSuccesCount)
 }

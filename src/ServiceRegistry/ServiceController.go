@@ -24,8 +24,10 @@ func (ctrl *JsonFile) Store(c *nano.Context) {
 
 	serviceRegistryEntry := ServiceRegistryEntryInput{}
 	c.BindJSON(&serviceRegistryEntry)
+
 	println("Registration recived for: " + serviceRegistryEntry.ServiceDefinition)
 	respForm := serviceRegistryEntry.Save()
+
 	if respForm == nil {
 		println("register denied, service allready exist or bad payload")
 		c.JSON(http.StatusOK, "service denied, service allready exist or bad payload")
