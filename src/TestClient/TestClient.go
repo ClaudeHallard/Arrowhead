@@ -12,41 +12,41 @@ import (
 )
 
 func main() {
-	java = false //Set to true for java version
-	goLocalhost = false
-	go preformTests("register", 1000, 1)
-	go preformTests("register", 1000, 1001)
-	go preformTests("register", 1000, 2001)
-	go preformTests("register", 1000, 3001)
-	go preformTests("register", 1000, 4001)
+	java = true //Set to true for java version
+	goLocalhost = true
+	/*
+		go preformTests("register", 10000, 1)
+		go preformTests("register", 10000, 10001)
+		go preformTests("register", 10000, 20001)
+		go preformTests("register", 10000, 30001)
+		go preformTests("register", 10000, 40001)
 
-	//preformTests("echo", 10, 1)
-	for i := 0; i < 1; {
+		//preformTests("echo", 10, 1)
+		for i := 0; i < 1; {
 
-	}
-
+		}
+	*/
 	//go preformTests("echo", 1000, 0)
 
 	//preformTests("register", 1, 1)
 	//preformTests("query", 1, 1) //preforms 100 querys
 	//preformTests("unregister", 5000, 1)
 
+	amount := 1000
+	start := 1
+
+	java = false //Set to true for java version
+	println("Golang")
+	testGoA := preformTestAll(amount, start)
 	/*
-
-			amount := 1000
-		start := 1
-		println("Java")
 		java = true
+		println("Java")
 		testJava := preformTestAll(amount, start)
-
-		java = false //Set to true for java version
-		println("Golang")
-		testGoA := preformTestAll(amount, start)
-
-		testGoA.printResults()
-		testJava.printResults()
-		fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
 	*/
+	testGoA.printResults()
+	//testJava.printResults()
+	//fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
+
 	//go preformTestAll(amount, start).printResults()
 
 }
@@ -252,7 +252,7 @@ func createRegisterRequest(i int, address string) *http.Request {
 		},
 	}
 	body, _ := json.Marshal(serviceRegistryEntry)
-	//println("Sending: " + string(body))
+	println("Sending: " + string(body))
 	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/register", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
@@ -276,7 +276,7 @@ func createQueryRequest(i int, address string) *http.Request {
 		PingProviders:                false,
 	}
 	body, _ := json.Marshal(serviceQueryForm)
-	println("Sending: " + string(body))
+	//println("Sending: " + string(body))
 	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/query", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
