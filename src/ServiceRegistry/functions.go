@@ -35,11 +35,9 @@ func handleError(message string, err error) {
 //Query
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	if len(model.MetadataRequirementsGo) == 0 {
-		println("converting")
 		model.MetadataRequirementsGo = convertToArrayFromStruct(model.MetadataRequirementsJava)
 	}
 	serviceQueryList := &ServiceQueryList{}
-	//serviceQueryList.ServiceQueryData = getServiceByID(-1)
 	serviceQueryList.ServiceDefenitionFilter(*model)
 
 	if len(model.MetadataRequirementsGo) > 0 {
@@ -441,7 +439,10 @@ func cleanPastValidityDate() {
 	for rows.Next() {
 
 		err := rows.Scan(&id, &endOfValidity)
-		handleError("query failed: %v", err)
+		if err != nil {
+			panic("query failed (endOfValidity cleaning): " + err.Error())
+		}
+
 		if !validityCheck(endOfValidity) {
 			pastValidityServices = append(pastValidityServices, id)
 		}

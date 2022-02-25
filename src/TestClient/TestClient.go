@@ -13,23 +13,23 @@ import (
 
 func main() {
 	java = false //Set to true for java version
-	/*
-		go preformTests("register", 1000, 1)
-		go preformTests("register", 1000, 1001)
-		go preformTests("register", 1000, 2001)
-		go preformTests("register", 1000, 3001)
-		go preformTests("register", 1000, 4001)
+	goLocalhost = false
+	go preformTests("register", 1000, 1)
+	go preformTests("register", 1000, 1001)
+	go preformTests("register", 1000, 2001)
+	go preformTests("register", 1000, 3001)
+	go preformTests("register", 1000, 4001)
 
-		//preformTests("echo", 10, 1)
-		for i := 0; i < 1; {
+	//preformTests("echo", 10, 1)
+	for i := 0; i < 1; {
 
-		}
-	*/
+	}
+
 	//go preformTests("echo", 1000, 0)
 
 	//preformTests("register", 1, 1)
 	//preformTests("query", 1, 1) //preforms 100 querys
-	preformTests("unregister", 5000, 1)
+	//preformTests("unregister", 5000, 1)
 
 	/*
 
@@ -52,6 +52,7 @@ func main() {
 }
 
 var java bool //Set to true to convert from metadata array to struct
+var goLocalhost bool
 
 // asdasdasd
 /*
@@ -148,8 +149,12 @@ func preformTests(testType string, amount int, start int) (time.Duration, int) {
 	if java {
 		address = "31.208.108.251:42454"
 	} else {
-		//address = "31.208.108.251:4245"
-		address = "localhost:4245"
+		if goLocalhost {
+			address = "localhost:4245"
+		} else {
+			address = "31.208.108.251:4245"
+		}
+
 	}
 	//address := "31.208.108.251:42454" //java version
 	//address = "31.208.108.251:4245" //golang version
