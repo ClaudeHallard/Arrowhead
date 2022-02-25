@@ -8,12 +8,14 @@ import (
 	"time"
 )
 
-var db *sql.DB
+//var db *sql.DB
 
 // OpenDatabase is functions to open database connectivity
-func OpenDatabase(dsn string) {
+
+func OpenDatabase() *sql.DB {
+	var db *sql.DB
 	var err error
-	db, err = sql.Open("sqlite3", dsn)
+	db, err = sql.Open("sqlite3", "file:ServiceRegistry/database/registryDB.db?cache=shared&_journal=WAL&_foreign_keys=on")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -21,6 +23,7 @@ func OpenDatabase(dsn string) {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("could not connect to database: %v", err)
 	}
+	return db
 }
 
 func handleError(message string, err error) {
@@ -51,34 +54,68 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 }
 
 func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOutput {
-
+	db := OpenDatabase()
 	stmt, err := db.Prepare("UPDATE Services SET (systemName, address, port, authenticationInfo, endOfValidity, secure, version, updatedAt) = (?,?,?,?,?,?,?,?) WHERE serviceDefinition = ? AND serviceURI = ?")
 
 	currentTime := time.Now().Format("2006-01-02T15:04:051Z")
 	_, err = stmt.Exec(model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.EndOfvalidity, model.Secure, model.Version, currentTime, model.ServiceDefinition, model.ServiceUri)
 	if err != nil {
 		println(err.Error())
-		panic("Encounterd an error during registration while inserting service")
+		panic("Encounterd an error during registration while inserting service, (updateService)")
 	}
 
 	var cnt int64
 	_ = db.QueryRow(`select id from Services where serviceURI = ?`, model.ServiceUri).Scan(&cnt)
+	defer db.Close()
+
 	return &getServiceByID(cnt)[0]
 }
 
 // check for serviceURI AND / OR serviceDefinition
 func GetCountUniqueURI(servicedef string, serviceURI string) int {
+	/*
+		var cnt int
+		db := OpenDatabase()
+		//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
+		_ = db.QueryRow(`select count(*) from Services where serviceURI = ?`, serviceURI).Scan(&cnt)
+
+		defer db.Close()
+		return cnt
+	*/
 	var cnt int
-	//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
-	_ = db.QueryRow(`select count(*) from Services where serviceURI = ?`, serviceURI).Scan(&cnt)
+	db := OpenDatabase()
+	row, err := db.Query(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI)
+	defer row.Close()
+	row.Scan(&cnt)
+	if err != nil {
+		panic("Encounterd an error during GetCountUniqueURI" + err.Error())
+	}
+	defer db.Close()
 	return cnt
+
 }
 
 // check for serviceURI AND / OR serviceDefinition
 func GetCountUpdate(servicedef string, serviceURI string) int {
+	/*
+			db := OpenDatabase()
+		var cnt int
+		//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
+		_ = db.QueryRow(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef).Scan(&cnt)
+		defer db.Close()
+		return cnt
+
+	*/
+	db := OpenDatabase()
 	var cnt int
 	//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
-	_ = db.QueryRow(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef).Scan(&cnt)
+	row, err := db.Query(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef)
+	defer row.Close()
+	row.Scan(&cnt)
+	if err != nil {
+		panic("Encounterd an error during GetCountUpdate" + err.Error())
+	}
+	defer db.Close()
 	return cnt
 }
 
@@ -103,7 +140,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		return nil
 
 	} else {
-
+		db := OpenDatabase()
 		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
 
 		currentTime := time.Now().Format("2006-01-02T15:04:05.000Z")
@@ -112,7 +149,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		stmt.Close()
 		if err != nil {
 			println(err.Error())
-			panic("Encounterd an error during registration while inserting service")
+			panic("Encounterd an error during registration while inserting service, (Save)")
 		}
 		lastId, err := res.LastInsertId()
 
@@ -124,16 +161,18 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 				panic("Encounterd an error during registration while inserting metadata")
 			}
 			_, err = stmt.Exec(lastId, v)
+			stmt.Close()
 
 		}
-		stmt.Close()
+
 		//loop through the interfaces array and add them to the table.
 		for _, v := range model.Interfaces {
 			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
 			handleError("could prepare statement: %v", err)
 			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
+			stmt.Close()
 		}
-		stmt.Close()
+
 		handleError("failed to store: %v", err)
 		println("Register worked")
 
@@ -175,6 +214,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		returnForm.Interfaces = interfaceArray
 		//println(len(model.MetadataGo))
 		returnForm.MetadataJava = convertToStructFromArray(returnForm.MetadataGo)
+		defer db.Close()
 		return &returnForm
 
 		//return &getServiceByID(lastId)[0]
@@ -184,6 +224,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 // Function to delete a service and the assosiated data
 func (model *ServiceRegistryEntryInput) Delete() bool {
+	db := OpenDatabase()
 	stmt, err := db.Prepare("DELETE FROM Services WHERE serviceDefinition = ? AND systemName = ? AND  address = ? AND port = ?")
 	handleError("could not prepare statement: %v", err)
 	res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port)
@@ -191,6 +232,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	affecteds, err := res.RowsAffected()
 	handleError("could not get affected rows: %v", err)
 	check := affecteds
+	defer db.Close()
 	if check > 0 {
 		return true
 	}
@@ -198,7 +240,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 }
 func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 	var queryHits []ServiceRegistryEntryOutput
-
+	db := OpenDatabase()
 	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
 	if err != nil {
 		panic(err.Error())
@@ -221,6 +263,7 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 
 	}
 	defer rows.Close()
+	defer db.Close()
 	for i := 0; i < len(queryHits); i++ {
 		queryHits[i].Interfaces = getInterfaceByID(int64(queryHits[i].ID))
 		_, queryHits[i].MetadataGo = getMetadataByID(int64(queryHits[i].ID))
@@ -233,20 +276,7 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 	return
 
 }
-func (serviceQueryList *ServiceQueryList) oldserviceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 
-	var queryHits []ServiceRegistryEntryOutput
-	for _, service := range serviceQueryList.ServiceQueryData {
-		if strings.Contains(service.ServiceDefinition.ServiceDefinition, serviceQueryForm.ServiceDefinitionRequirement) {
-
-			queryHits = append(queryHits, service)
-		}
-
-	}
-	serviceQueryList.ServiceQueryData = queryHits
-	return
-
-}
 func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQueryForm ServiceQueryForm) {
 	var metadataHits []ServiceRegistryEntryOutput
 	for _, service := range serviceQueryList.ServiceQueryData {
@@ -269,7 +299,7 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 //Function to get a specific or all services
 func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then all services will be retured
 	//var err error
-
+	db := OpenDatabase()
 	var serviceList []ServiceRegistryEntryOutput
 	//Get the interfaces
 	var interfaces = getInterfaceByID(id)
@@ -319,11 +349,13 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 	}
 
 	defer rows.Close()
+	defer db.Close()
 	return serviceList
 }
 
 //Function to get a specific or all interfaces
 func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces will be retured
+	db := OpenDatabase()
 	var interfaces []Interface
 	var rows *sql.Rows
 	var err error
@@ -345,8 +377,9 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 		interfaces = append(interfaces, i)
 
 	}
-	defer rows.Close()
 
+	defer rows.Close()
+	defer db.Close()
 	return interfaces
 }
 
@@ -356,7 +389,7 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 	var metaData []string
 	var rows *sql.Rows
 	var err error
-
+	db := OpenDatabase()
 	if 0 <= id {
 		rows, err = db.Query("SELECT serviceID, metaData  FROM MetaData WHERE serviceID = ?", id)
 	} else {
@@ -380,23 +413,24 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 
 	}
 	defer rows.Close()
-
+	defer db.Close()
 	return serviceID, metaData
 }
 func deleteByID(id int) {
+	db := OpenDatabase()
 	stmt, err := db.Prepare("DELETE FROM Services WHERE id = ?")
 	handleError("could not prepare statement: %v", err)
 	_, err = stmt.Exec(id)
 
 	handleError("delete failed: %v", err)
-
+	defer db.Close()
 }
 func cleanPastValidityDate() {
 	fmt.Println("Preforming endOfValidity Cleaning")
 	var pastValidityServices []int
 	var id int
 	var endOfValidity string
-
+	db := OpenDatabase()
 	rows, err := db.Query("SELECT id, endOfValidity FROM Services")
 
 	if err != nil {
@@ -418,6 +452,7 @@ func cleanPastValidityDate() {
 		fmt.Printf("Removing service with ID: %d, the endOfValidity is not valid\n", v)
 		deleteByID(v)
 	}
+	defer db.Close()
 
 }
 func validityCheck(timeString string) bool {
@@ -457,7 +492,6 @@ func convertToStructFromArray(metadata []string) MetadataJava {
 	metadataJava := MetadataJava{}
 
 	if len(metadata) >= 1 {
-		println("inside")
 		metadataJava.AdditionalProp1 = metadata[0]
 	}
 	if len(metadata) >= 2 {

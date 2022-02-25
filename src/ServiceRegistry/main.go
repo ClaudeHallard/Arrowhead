@@ -14,7 +14,7 @@ func StartServiceRegistry() {
 
 	config := getConfig()
 
-	OpenDatabase("file:ServiceRegistry/database/registryDB.db?cache=shared&_journal_mode=WAL&_foreign_keys=on")
+	//OpenDatabase("file:ServiceRegistry/database/registryDB.db?cache=shared&_journal_mode=WAL&_foreign_keys=on")
 	if config.CleanEndOfValidity {
 		go startValidityTimer(config.CleanDelay) //starts cleaning on ticks in background
 	}
