@@ -11,7 +11,7 @@ import (
 var db *sql.DB
 
 // OpenDatabase is functions to open database connectivity
-
+// Used by all functions, the performance suffered greatly when each method opened their own database connection
 func OpenDatabase() {
 
 	var err error
@@ -32,7 +32,7 @@ func handleError(message string, err error) {
 	}
 }
 
-//Query
+// Function called after
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	if len(model.MetadataRequirementsGo) == 0 {
 		model.MetadataRequirementsGo = convertToArrayFromStruct(model.MetadataRequirementsJava)
@@ -51,36 +51,32 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	return serviceQueryList
 }
 
+// Function for updating a service
 func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOutput {
 
 	stmt, err := db.Prepare("UPDATE Services SET (systemName, address, port, authenticationInfo, endOfValidity, secure, version, updatedAt) = (?,?,?,?,?,?,?,?) WHERE serviceDefinition = ? AND serviceURI = ?")
 
 	currentTime := time.Now().Format("2006-01-02T15:04:051Z")
 	_, err = stmt.Exec(model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.EndOfvalidity, model.Secure, model.Version, currentTime, model.ServiceDefinition, model.ServiceUri)
+	stmt.Close()
 	if err != nil {
 		println(err.Error())
 		panic("Encounterd an error during registration while inserting service, (updateService)")
 	}
 
 	var cnt int64
-	_ = db.QueryRow(`select id from Services where serviceURI = ?`, model.ServiceUri).Scan(&cnt)
-
+	row, err := db.Query(`select id from Services where serviceURI = ?`, model.ServiceUri)
+	row.Close()
+	if err != nil {
+		panic("Encounterd an error during updateService" + err.Error())
+	}
+	row.Scan(&cnt)
 	return &getServiceByID(cnt)[0]
 }
 
-// check for serviceURI AND / OR serviceDefinition
+// Check for serviceURI AND / OR serviceDefinition
 func GetCountUniqueURI(servicedef string, serviceURI string) int {
-	/*
-		var cnt int
-		db := OpenDatabase()
-		//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
-		_ = db.QueryRow(`select count(*) from Services where serviceURI = ?`, serviceURI).Scan(&cnt)
-
-		defer db.Close()
-		return cnt
-	*/
 	var cnt int
-
 	row, err := db.Query(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI)
 	defer row.Close()
 	row.Scan(&cnt)
@@ -94,18 +90,8 @@ func GetCountUniqueURI(servicedef string, serviceURI string) int {
 
 // check for serviceURI AND / OR serviceDefinition
 func GetCountUpdate(servicedef string, serviceURI string) int {
-	/*
-			db := OpenDatabase()
-		var cnt int
-		//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
-		_ = db.QueryRow(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef).Scan(&cnt)
-		defer db.Close()
-		return cnt
-
-	*/
 
 	var cnt int
-	//_ = db.QueryRow(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI).Scan(&cnt)
 	row, err := db.Query(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef)
 	defer row.Close()
 	row.Scan(&cnt)
@@ -225,6 +211,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	stmt, err := db.Prepare("DELETE FROM Services WHERE serviceDefinition = ? AND systemName = ? AND  address = ? AND port = ?")
 	handleError("could not prepare statement: %v", err)
 	res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port)
+	stmt.Close()
 	handleError("query failed: %v", err)
 	affecteds, err := res.RowsAffected()
 	handleError("could not get affected rows: %v", err)
@@ -239,6 +226,7 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 	var queryHits []ServiceRegistryEntryOutput
 
 	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
+	rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}

@@ -13,20 +13,9 @@ import (
 
 func main() {
 	java = true //Set to true for java version
-	goLocalhost = true
-	/*
-		go preformTests("register", 10000, 1)
-		go preformTests("register", 10000, 10001)
-		go preformTests("register", 10000, 20001)
-		go preformTests("register", 10000, 30001)
-		go preformTests("register", 10000, 40001)
+	goLocalhost = false
 
-		//preformTests("echo", 10, 1)
-		for i := 0; i < 1; {
-
-		}
-	*/
-	//go preformTests("echo", 1000, 0)
+	//HeavyTest("register", 1000)
 
 	//preformTests("register", 1, 1)
 	//preformTests("query", 1, 1) //preforms 100 querys
@@ -38,14 +27,15 @@ func main() {
 	java = false //Set to true for java version
 	println("Golang")
 	testGoA := preformTestAll(amount, start)
-	/*
-		java = true
-		println("Java")
-		testJava := preformTestAll(amount, start)
-	*/
+
+	java = true
+	println("Java")
+	testJava := preformTestAll(amount, start)
+
 	testGoA.printResults()
-	//testJava.printResults()
-	//fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
+
+	testJava.printResults()
+	fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
 
 	//go preformTestAll(amount, start).printResults()
 
@@ -54,65 +44,19 @@ func main() {
 var java bool //Set to true to convert from metadata array to struct
 var goLocalhost bool
 
-// asdasdasd
-/*
-func (metadata Metadata) MarshalJSON() ([]byte, error) {
-	metadataStruct := MetadataStruct{}
-	if java {
-		if len(metadata) >= 1 {
-			metadataStruct.AdditionalProp1 = metadata[0]
-		}
-		if len(metadata) >= 2 {
-			metadataStruct.AdditionalProp2 = metadata[1]
-		}
-		if len(metadata) >= 3 {
-			metadataStruct.AdditionalProp3 = metadata[2]
-		}
+// Preform amount test on 5 go routines
+func HeavyTest(testType string, amount int) {
+	go preformTests(testType, amount, 1)
+	go preformTests(testType, amount, amount+1)
+	go preformTests(testType, amount, (2*amount)+1)
+	go preformTests(testType, amount, (3*amount)+1)
+	go preformTests(testType, amount, (4*amount)+1)
 
-		return json.Marshal(metadataStruct)
-	} else {
-		var sArray []string
-		sArray = metadata
-		return json.Marshal(sArray)
-	}
-
-}
-func (metadata *Metadata) UnmarshalJSON(data []byte) error {
-
-	var metadataStruct *MetadataStruct
-	println("outsidesss22")
-	var stringArray []string
-	println(len(data))
-	println(string(data))
-	err := json.Unmarshal(data, &stringArray)
-
-	if err != nil {
-		println("inside")
-		err := json.Unmarshal(data, &metadataStruct)
-		if err != nil {
-			return err
-		}
-		println(metadataStruct.AdditionalProp1)
-
-		if metadataStruct.AdditionalProp1 != "" {
-			*metadata = append(*metadata, metadataStruct.AdditionalProp1)
-		}
-		if metadataStruct.AdditionalProp2 != "" {
-			*metadata = append(*metadata, metadataStruct.AdditionalProp2)
-		}
-		if metadataStruct.AdditionalProp3 != "" {
-			*metadata = append(*metadata, metadataStruct.AdditionalProp3)
-		}
-
-		return nil
+	for i := 0; i < 1; {
 
 	}
-	*metadata = append(stringArray)
-	println("outside")
-	//*metadata = append(stringArray)
-	return nil
 }
-*/
+
 type testData struct {
 	status      string
 	elapsedTime time.Duration
@@ -252,7 +196,7 @@ func createRegisterRequest(i int, address string) *http.Request {
 		},
 	}
 	body, _ := json.Marshal(serviceRegistryEntry)
-	println("Sending: " + string(body))
+	//println("Sending: " + string(body))
 	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/register", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
