@@ -12,25 +12,40 @@ import (
 )
 
 func main() {
-	java = true //Set to true for java version
-	//preformTests("echo", 100, 0)
+	java = false //Set to true for java version
+	go preformTests("register", 1000, 1)
+	go preformTests("register", 1000, 1001)
+	go preformTests("register", 1000, 2001)
+	go preformTests("register", 1000, 3001)
+	go preformTests("register", 1000, 4001)
+
+	//preformTests("echo", 10, 1)
+	for i := 0; i < 1; {
+
+	}
+	//go preformTests("echo", 1000, 0)
+
 	//preformTests("register", 1, 1)
 	//preformTests("query", 1, 1) //preforms 100 querys
 	//preformTests("unregister", 1, 1)
 
-	amount := 2
-	start := 1
-	java = false //Set to true for java version
-	println("Golang")
+	/*
 
-	testGoA := preformTestAll(amount, start)
+			amount := 1000
+		start := 1
+		println("Java")
+		java = true
+		testJava := preformTestAll(amount, start)
 
-	println("Java")
-	java = true
-	testJava := preformTestAll(amount, start)
-	testGoA.printResults()
-	testJava.printResults()
-	fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
+		java = false //Set to true for java version
+		println("Golang")
+		testGoA := preformTestAll(amount, start)
+
+		testGoA.printResults()
+		testJava.printResults()
+		fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
+	*/
+	//go preformTestAll(amount, start).printResults()
 
 }
 
@@ -181,6 +196,7 @@ func preformTests(testType string, amount int, start int) (time.Duration, int) {
 	case "echo":
 		println("Echo")
 		for i := 0; i < amount; i++ {
+
 			_, tD := SendRequest(echoRequest(start, address))
 			totalTime = totalTime + tD.elapsedTime
 			fmt.Printf("#%d  Status: %s   Time %s\n", i, tD.status, tD.elapsedTime)
@@ -189,7 +205,9 @@ func preformTests(testType string, amount int, start int) (time.Duration, int) {
 
 				successCount = successCount + 1
 			}
+
 		}
+
 	}
 
 	fmt.Printf("Totaltime %s \n", totalTime)
@@ -240,7 +258,7 @@ func createRegisterRequest(i int, address string) *http.Request {
 func createQueryRequest(i int, address string) *http.Request {
 	serviceQueryForm := ServiceQueryForm{
 		//ServiceDefinitionRequirement: "TestSD" + strconv.Itoa(i),
-		ServiceDefinitionRequirement: "TestSD1",
+		ServiceDefinitionRequirement: "TestSD101",
 		InterfaceRequirements:        []string{},
 		SecurityRequirements:         []string{},
 		MetadataRequirementsGo:       []string{},
