@@ -4,13 +4,16 @@
 
 ##  __System Overview__
 
-This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in GOLANG, an SQLite based storage is used for this demo. 
+This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in Golang, an SQLite based storage is used for this demo. The demo is both compatible with the original Framework implemented in Java (info listed in [additional doc](#additional-documentation)) and another Go-based implementation with two other demos, one [Orchestrator](https://github.com/Cordobro/D0020E)  and one [Application system](https://github.com/DavidS1998/D00020E) part. 
 
 <br>
 
-This project is a part of the Course D0020E at Luleå University of Technology
-### Design structures and UML schematics:
+This project is a part of the Course D0020E at Luleå University of Technology 2021/2022
 
+<br>
+
+## Design structures and UML schematics:
+#### The Basic design for this service registry can be found in the [UML directory](https://github.com/ClaudeHallard/Arrowhead/tree/main/UML) , it contains all diagrams and figures stated below as well as the raw UML format made in [Eclipse Papyrus™](https://www.eclipse.org/papyrus/).
 - [System Overview](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/Overview.png) (Relation view for the service registry and other API's in the framework)
 
 - [Use Case Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/UseCaseDiagram.png)
@@ -26,25 +29,55 @@ This project is a part of the Course D0020E at Luleå University of Technology
 - [State Diagram](https://raw.githubusercontent.com/ClaudeHallard/Arrowhead/main/UML/images/StateDiagram.png)
 
 
+<br>
+
 ## Compile and run instructions
 
-#### __Windows users:__ run the "```serviceRegistry.exe```"-file or run 
-#### and compile with ```go build && ./serviceRegistry``` in the main directory
-<br>
-
-#### __MAC/unix users:__ compile and run with ```go run *.go``` in the main directory
-
+#### __Windows users:__ run the "```serviceRegistry.exe```"-file or run and compile with ```go build && ./serviceRegistry``` in the "src" directory, it can also be compiled without building with ```go run starter.go```.
 ##### OBS!, Make sure to have a c-compiler installed in your %PATH to be able to use the imported SQLite extenstion used in this project.
+<br>
+
+#### __MAC/unix users:__ compile and run with ```go run starter.go``` in the "src" directory or ```go build && ./serviceRegistry``` if the system supports the creation of executable files.
 
 <br>
 
-__Note:__ The ```clientTest.go``` file can be used to test and run diagnostics on this serviceRegistry demo, it contains different test methods for all services provided in this demo, it can be compiled with ```go run clientTest.go```
+__Note1:__ depending on the current go setup and version you may need to delete the .mod file and run  ```go mod init``` and ```go mod tidy``` to compile the program.
+
+__Note2:__ The ```TestClient.go``` folder contains example payloads and test that can be used to to run diagnostics on this serviceRegistry, it contains methods for testing all services provided in this demo, it can be compiled with ```go run *.go``` in the test directory.
 
 
 ### __Database clarifications__
-This implementation is using a local based SQLite database stored in the file: ```registryDB.db``` in the main directory. No database management system is required to use the Service Registry but is recommended for eventual testing and debug checks. In the developement of this demo, ["__SQLitestudio__"](https://sqlitestudio.pl/) and ["__DBBrowser__"](https://sqlitebrowser.org/) has been used.
-# 
+This implementation is using a local based SQLite database stored in the file: ```registryDB.db``` in the Database directory. No database management system is required to use the Service Registry but is recommended for eventual testing and debug checks. In the developement of this demo, ["__SQLitestudio©__"](https://sqlitestudio.pl/) and ["__DBBrowser__"](https://sqlitebrowser.org/) has been used.
+
+
+<br>
+
+## Additional documentation and information
+
+### __Imported repos__
+The project is importing two other Github repositories for its implementaion, the ["github.com/hariadivicky/nano"](https://github.com/hariadivicky/nano) repo for an easy use of RESTful methods and for storing JSON data into the database. The interface between golang and SQL is imported with the ["github.com/mattn/go-sqlite3"](https://github.com/mattn/go-sqlite3) repo.
+
+### __GoDoc - documentaion__
+The file and folder structure supports GoDoc generation for this project repo, setup guide can be found [HERE](https://pkg.go.dev/golang.org/x/tools/cmd/godoc)
+
+### __Support for the Original Java Implementaion__
+
+
+
+Payloads used in the Java [Arrowhead Framework](https://github.com/eclipse-arrowhead/core-java-spring) can also be used in this Golang version, the strucs in [```JSONForms.go```](https://github.com/ClaudeHallard/Arrowhead/blob/main/src/ServiceRegistry/JSONForms.go) contain specific fields for "MetaDataJava" and "MetaDataGo" and the functionalites for extracting data for each of the corresponding payloads. See the payload struct listed for each method for more details.
+
+### __Test functions__
+
+Comparation between the [Arrowhead Framework](https://github.com/eclipse-arrowhead/core-java-spring) and this demo has been implemented in this project, the tests can be found in the ```TestClient.go``` -file where also payload tests can be ran. 
+
+__Note:__ The Java program is not provided in this repository
+
+<br>
+<br>
+
 ## Service methods Overview
+# 
+The service Registry supports four operands for client systems through HTTP requests, 
 
 The __echo__ method
 
@@ -54,7 +87,7 @@ The __query__ method
 
 The __unregister__ method 
 
-__Note:__  There are other functionalies of the arrowhead framework that is not implemented in this demo of the Service Registry.
+__Note:__  There are other functionalies and methods in the original Arrohead Framework's Service Registry that is not implemented in this demo.
 
 
 The base URL for the requests: `http://<host>:<port>/serviceregistry` (for this demo the localhost is set to port 4245)
@@ -91,18 +124,17 @@ type ServiceRegistryEntryInput struct {
 	ServiceUri        string         `json:"serviceUri"`
 	EndOfvalidity     string         `json:"endOfValidity"`
 	Secure            string         `json:"secure"`
-	Metadata          []string       `json:"metadata"`
+	MetadataGo        []string       `json:"metadataGo"`
+	MetadataJava      MetadataJava   `json:"metadata"`
 	Version           int            `json:"version"`
 	Interfaces        []string       `json:"interfaces"`
 }
-
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
-	Address            string `json:"adress"`
+	Address            string `json:"address"`
 	Port               int    `json:"port"`
 	AuthenticationInfo string `json:"authenticationInfo"`
 }
-
 ```
 ## Input clarifiction:
 | Field | Description | Mandatory |
@@ -110,9 +142,10 @@ type ProviderSystem struct {
 | `serviceDefinition` | Service Definition | yes |
 | `providerSystem` | Provider System | yes |
 | `serviceUri` |  URI of the service | yes |
-| `endOfValidity` | TimeStamp, overdue services will be unregistred  | no |
+| `endOfValidity` | TimeStamp, must be valid and in correct format  | yes |
 | `secure` | Security info | no |
-| `metadata` | Metadata | no |
+| `metadataGo` | Metadata for this go demo | no |
+| `metadataJava` | Metadata for the Java version| no |
 | `version` | Version of the Service | no |
 | `interfaces` | List of the interfaces the Service supports | no |
 
@@ -122,13 +155,14 @@ Returns a __ServiceRegistryEntryOutput (Go struct with json format)__
 type ServiceRegistryEntryOutput struct {
 	ID                int               `json:"id"`
 	ServiceDefinition ServiceDefinition `json:"serviceDefinition"`
-	Provider          Provider          `json:"id"`
+	Provider          Provider          `json:"provider"`
 	ServiceUri        string            `json:"serviceUri"`
-	EndOfvalidity     string            `json:"endOfValidity"`
-	Secure            string            `json:"NOT_SECURE"`
-	Metadata          Metadata          `json:"metadata"`
+	EndOfValidity     string            `json:"endOfValidity"`
+	Secure            string            `json:"secure"`
+	MetadataGo        []string          `json:"metadataGo"`
+	MetadataJava      MetadataJava      `json:"metadata"`
 	Version           int               `json:"version"`
-	interfaces        []Interface       `json:"interfaces"` 
+	Interfaces        []Interface       `json:"interfaces"`
 	CreatedAt         string            `json:"createdAt"`
 	UpdatedAt         string            `json:"updatedAt"`
 }
@@ -155,7 +189,6 @@ type Interface struct {
 	CreatedAt     string `json:"createdAt"`
 	UpdatedAt     string `json:"updatedAt"`
 }
-
 ```
 ## Output clarifiction:
 | Field | Description |
@@ -166,7 +199,8 @@ type Interface struct {
 | `serviceUri` |  URI of the Service |
 | `endOfValidity` | Service is available until this UTC timestamp |
 | `secure` | Security info |
-| `metadata` | Metadata |
+| `metadataGo` | Metadata for this go demo |
+| `metadataJava` | Metadata for the Java version|
 | `version` | Version of the Service |
 | `interfaces` | List of the interfaces the Service supports |
 | `createdAt` | Creation date of the entry |
@@ -184,14 +218,15 @@ Returns ServiceQueryList for the specific service. If no service was found, an e
 __ServiceQueryForm__ is the input (Go struct with json format)
 ```
 type ServiceQueryForm struct {
-	ServiceDefinitionRequirement string   `json:"serviceDefinitionRequirement"`
-	InterfaceRequirements        []string `json:"interfaceRequirements"`
-	SecurityReRequirements       []string `json:"securityRequirements"`
-	MetadataRequirements         []string `json:"metadataRequirements"`
-	VersionRequirements          int      `json:"versionRequirement"`
-	MaxVersionRequirements       int      `json:"maxVersionRequirement"`
-	MinVersionRequirements       int      `json:"minVersionRequirement"`
-	PingProviders                bool     `json:"pingProviders"`
+	ServiceDefinitionRequirement string       `json:"serviceDefinitionRequirement"`
+	InterfaceRequirements        []string     `json:"interfaceRequirements"`
+	SecurityRequirements         []string     `json:"securityRequirements"`
+	MetadataRequirementsGo       []string     `json:"metadataRequirementsGo"`
+	MetadataRequirementsJava     MetadataJava `json:"metadataRequirements"`
+	VersionRequirements          int          `json:"versionRequirement"`
+	MaxVersionRequirements       int          `json:"maxVersionRequirement"`
+	MinVersionRequirements       int          `json:"minVersionRequirement"`
+	PingProviders                bool         `json:"pingProviders"`
 }
 ```
 ## Input clarifiction:
@@ -200,7 +235,8 @@ type ServiceQueryForm struct {
 | `serviceDefinitionRequirement` | Name of the required Service Definition | yes |
 | `interfaceRequirements` | List of required interfaces | no |
 | `securityRequirements` | List of required security settings | no |
-| `metadataRequirements` | Key value pairs of required metadata | no |
+| `metadataRequirementsGo` | Value of required metadata | no |
+| `metadataRequirementsJava` | Key value pairs of required metadata | no |
 | `versionRequirement` | Required version number | no |
 | `maxVersionRequirement` | Maximum version requirement | no |
 | `minVersionRequirement` | Minimum version requirement | no |
@@ -221,7 +257,8 @@ type ServiceRegistryEntryOutput struct {
 	ServiceUri        string            `json:"serviceUri"`
 	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"secure"`
-	Metadata          []string          `json:"metadata"`
+	MetadataGo        []string          `json:"metadataGo"`
+	MetadataJava      MetadataJava      `json:"metadata"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"` 
 	CreatedAt         string            `json:"createdAt"`
@@ -251,7 +288,6 @@ type Interface struct {
 	CreatedAt     string `json:"createdAt"`
 	UpdatedAt     string `json:"updatedAt"`
 }
-
 ```
 ## Output clarifiction:
 | Field | Description |
@@ -263,7 +299,8 @@ type Interface struct {
 | `serviceUri` | URI of the Service |
 | `endOfValidity` | Service is available until this UTC timestamp. |
 | `secure` | Security info |
-| `metadata` | Metadata |
+| `metadataGo` | Metadata payload for Go|
+| `metadataJava` | Metadata payload for Java|
 | `version` | Version of the Service |
 | `interfaces` | List of interfaces the Service supports |
 | `createdAt` | Creation date of the entry |
@@ -276,41 +313,24 @@ type Interface struct {
 DELETE /serviceregistry/unregister
 ```
 
-Removes a registered service, returns an OK if service was removed and an Error if failed
+Removes a registered service, returns an "OK" if service was removed and an "FAILED" if it falied or 
 
-__ServiceRegistryEntryInput__ is the input (Go struct with json format)
-```
-type ServiceRegistryEntryInput struct {
-	ServiceDefinition string         `json:"serviceDefinition"`
-	ProviderSystem    ProviderSystem `json:"providerSystem"`
-	ServiceUri        string         `json:"serviceUri"`
-	EndOfvalidity     string         `json:"endOfValidity"`
-	Secure            string         `json:"secure"`
-	Metadata          []string       `json:"metadata"`
-	Version           int            `json:"version"`
-	Interfaces        []string       `json:"interfaces"`
-}
+Pure URI provided data is the input
 
-type ProviderSystem struct {
-	SystemName         string `json:"systemName"`
-	Address            string `json:"adress"`
-	Port               int    `json:"port"`
-	AuthenticationInfo string `json:"authenticationInfo"`
-}
-
-```
+Example format where `"X"`, `"Y"`, `"Z"` ,`"Q"` and `"W"`is provided data:
+`
+http://<host>:<port>/serviceregistry/unregister?address="X"&port="Y"&service_definition="Z"&service_uri="Q"&system_name="W"
+`
 ## Input clarifiction:
 
 | Field | Description | Mandatory |
 | ----- | ----------- | --------- |
-| `serviceDefinition` | Service Definition | yes |
-| `providerSystem` | Provider System | yes |
-| `serviceUri` |  URI of the service | no |
-| `endOfValidity` | TimeStamp, overdue services will be unregistred  | no |
-| `secure` | Security info | no |
-| `metadata` | Metadata | no |
-| `version` | Version of the Service | no |
-| `interfaces` | List of the interfaces the Service supports | no |
+| `address` | Service address | yes |
+| `port` | Port number | yes |
+| `service_definition` | Service Definition | yes |
+| `service_uri` |  URI of the service | yes |
+| `system_name` |  Name of the system | yes |
 
-Note: (inorder to unregistrer a service `serviceDefinition` , `systemName` , `adress` & `port` must be provided and valid)
+
+Note: Inorder to unregistrer a service,  `adress`, `port`, `serviceDefinition` , `service_uri` &  `systemName` must be all be provided and valid
 
