@@ -4,7 +4,7 @@
 
 ##  __System Overview__
 
-This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in Golang, an SQLite based storage is used for this demo. The demo is both compatible with the original Framework implemented in Java (info listed in [additional doc](#additional-documentation)) and another Go-based implementation with two other demos, one [Orchestrator](https://github.com/Cordobro/D0020E)  and one [Application system](https://github.com/DavidS1998/D00020E) part. 
+This System is a small demo version of the [Arrowhead Framework 4.4.0](https://github.com/eclipse-arrowhead/core-java-spring)'s service registry implemented in Golang, an SQLite based storage is used for this demo. The demo is both compatible with the original Framework implemented in Java (info listed in [additional doc](#support-for-the-original-java-implementaion)) and another Go-based implementation with two other demos, one [Orchestrator](https://github.com/Cordobro/D0020E)  and one [Application system](https://github.com/DavidS1998/D00020E) part. 
 
 <br>
 
@@ -58,22 +58,24 @@ This implementation is using a local based SQLite database stored in the file: `
 The project is importing two other Github repositories for its implementaion, the ["github.com/hariadivicky/nano"](https://github.com/hariadivicky/nano) repo for an easy use of RESTful methods and for storing JSON data into the database. The interface between golang and SQL is imported with the ["github.com/mattn/go-sqlite3"](https://github.com/mattn/go-sqlite3) repo.
 
 ### __GoDoc - documentaion__
-The file and folder structure supports GoDoc generation for this project repo, setup guide can be found [HERE](https://pkg.go.dev/golang.org/x/tools/cmd/godoc)
+The folder structure in this repo supports generation of GO documentation, setup guide can be found [HERE](https://pkg.go.dev/golang.org/x/tools/cmd/godoc)
 
 ### __Support for the Original Java Implementaion__
 
-
-
 Payloads used in the Java [Arrowhead Framework](https://github.com/eclipse-arrowhead/core-java-spring) can also be used in this Golang version, the strucs in [```JSONForms.go```](https://github.com/ClaudeHallard/Arrowhead/blob/main/src/ServiceRegistry/JSONForms.go) contain specific fields for "MetaDataJava" and "MetaDataGo" and the functionalites for extracting data for each of the corresponding payloads. See the payload struct listed for each method for more details.
+
+### __Config file__ 
+
+Inorder to provide an easy setup for some dynamic parameters the [```config.json```](https://github.com/ClaudeHallard/Arrowhead/blob/main/src/config.json) can be changed. The port number and the use of the service registry's validity check can be managed here.
 
 ### __Test functions__
 
-Comparation between the [Arrowhead Framework](https://github.com/eclipse-arrowhead/core-java-spring) and this demo has been implemented in this project, the tests can be found in the ```TestClient.go``` -file where also payload tests can be ran. 
+Comparation between the [Arrowhead Framework](https://github.com/eclipse-arrowhead/core-java-spring) and this demo has been implemented in this project, the tests can be found in the ```TestClient.go``` -file where payload tests also can be ran. 
 
 __Note:__ The Java program is not provided in this repository
 
 <br>
-<br>
+
 
 ## Service methods Overview
 # 
@@ -89,8 +91,11 @@ The __unregister__ method
 
 __Note:__  There are other functionalies and methods in the original Arrohead Framework's Service Registry that is not implemented in this demo.
 
+<br>
 
-The base URL for the requests: `http://<host>:<port>/serviceregistry` (for this demo the localhost is set to port 4245)
+The base URL for the requests: ```http://<host>:<port>/serviceregistry``` (for this demo the localhost is set to port 4245)
+
+__Note:__ "``https://``" (secure protocol) is not supported in this version.
 
 ### Service description<br />
 
@@ -149,7 +154,7 @@ type ProviderSystem struct {
 | `version` | Version of the Service | no |
 | `interfaces` | List of the interfaces the Service supports | no |
 
-Returns a __ServiceRegistryEntryOutput (Go struct with json format)__
+Returns a __ServiceRegistryEntryOutput (Go structs with json format)__
 
 ```
 type ServiceRegistryEntryOutput struct {
@@ -215,7 +220,7 @@ POST /serviceregistry/query
 Returns ServiceQueryList for the specific service. If no service was found, an error message is sent to the client
 
 
-__ServiceQueryForm__ is the input (Go struct with json format)
+__ServiceQueryForm__ is the input (Go structs with json format)
 ```
 type ServiceQueryForm struct {
 	ServiceDefinitionRequirement string       `json:"serviceDefinitionRequirement"`
@@ -243,7 +248,7 @@ type ServiceQueryForm struct {
 | `pingProviders` | Return only available providers | no |
 
 
-Returns a __ServiceQueryList (Go struct with json format)__
+Returns a __ServiceQueryList (Go structs with json format)__
 ```
 type ServiceQueryList struct {
 	ServiceQueryData []ServiceRegistryEntryOutput `json:"serviceQueryData"`
