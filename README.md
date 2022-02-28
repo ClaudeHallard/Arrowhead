@@ -78,7 +78,7 @@ __Note:__ The Java program is not provided in this repository
 
 
 ## Service methods Overview
-# 
+
 The service Registry supports four operands for client systems through HTTP requests, 
 
 The __echo__ method
