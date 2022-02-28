@@ -1,3 +1,17 @@
+/*
+**********************************************
+@authors:
+Ivar Grunaeu, ivagru-9@student.ltu.se
+Jean-Claude, Hallard jeahal-8@student.ltu.se
+Marcus Paulsson, marpau-8@student.ltu.se
+Pontus Schünemann, ponsch-9@student.ltu.se
+Fabian Widell, fabwid-9@student.ltu.se
+
+**********************************************
+functions.go contains all functions for communicating with
+the database, these functions are called and used by methods
+in other files. It also contains numerous helper functions.  */
+
 package ServiceRegistry
 
 import (
@@ -10,8 +24,7 @@ import (
 
 var db *sql.DB
 
-// OpenDatabase is functions to open database connectivity
-// Used by all functions, the performance suffered greatly when each method opened their own database connection
+// OpenDatabase establishing a connecttion to the specified database file.
 func OpenDatabase() {
 
 	var err error
@@ -26,13 +39,14 @@ func OpenDatabase() {
 
 }
 
+// Helper function for printing error messages.
 func handleError(message string, err error) {
 	if err != nil {
 		log.Fatalf(message, err)
 	}
 }
 
-// Function called after
+// Query invokes checks on the query form and sends request to extract information from the database. Returns the information in a query list.
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	if len(model.MetadataRequirementsGo) == 0 {
 		model.MetadataRequirementsGo = convertToArrayFromStruct(model.MetadataRequirementsJava)
@@ -51,7 +65,8 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	return serviceQueryList
 }
 
-// Function for updating a service
+// Update function that is invoked if the service allready exist when register, then the service
+// is updated instead of registed again. Returns a request for the updated information
 func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOutput {
 
 	stmt, err := db.Prepare("UPDATE Services SET (systemName, address, port, authenticationInfo, endOfValidity, secure, version, updatedAt) = (?,?,?,?,?,?,?,?) WHERE serviceDefinition = ? AND serviceURI = ?")
@@ -83,9 +98,7 @@ func GetCountUniqueURI(servicedef string, serviceURI string) int {
 	if err != nil {
 		panic("Encounterd an error during GetCountUniqueURI" + err.Error())
 	}
-
 	return cnt
-
 }
 
 // check for serviceURI AND / OR serviceDefinition
