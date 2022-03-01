@@ -169,15 +169,17 @@
     <ownedEnd xmi:type="uml:Property" xmi:id="_rZVygH9wEeycd-PD-JGeXg" name="consumer" type="_b39Z8FtuEeyOlsdyiqxZZQ" association="_rZTWQH9wEeycd-PD-JGeXg"/>
     <ownedEnd xmi:type="uml:Property" xmi:id="_rZVygX9wEeycd-PD-JGeXg" name="get /ehco" type="_ejKKQH9wEeycd-PD-JGeXg" association="_rZTWQH9wEeycd-PD-JGeXg"/>
   </packagedElement>
-  <packagedElement xmi:type="uml:Package" xmi:id="_SBypgH9yEeycd-PD-JGeXg" name="ClientTest">
-    <packagedElement xmi:type="uml:Class" xmi:id="_M208UH95Eeycd-PD-JGeXg" name="clientTest.go">
+  <packagedElement xmi:type="uml:Package" xmi:id="_SBypgH9yEeycd-PD-JGeXg" name="TestClient">
+    <packagedElement xmi:type="uml:Class" xmi:id="_M208UH95Eeycd-PD-JGeXg" name="TestClient">
       <ownedOperation xmi:type="uml:Operation" xmi:id="_M208UX95Eeycd-PD-JGeXg" name="main"/>
     </packagedElement>
   </packagedElement>
   <packagedElement xmi:type="uml:Package" xmi:id="_u0FwMH9yEeycd-PD-JGeXg" name="ServiceRegistry">
     <packagedElement xmi:type="uml:Component" xmi:id="_u0FwMX9yEeycd-PD-JGeXg" name="Component1"/>
     <packagedElement xmi:type="uml:Class" xmi:id="_5WHIAH9zEeycd-PD-JGeXg" name="main.go">
-      <ownedOperation xmi:type="uml:Operation" xmi:id="_9XnOkH9zEeycd-PD-JGeXg" name="main"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_aN_UIJl3Eey_W57nfRgY1A" name="configJson" visibility="public"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_9XnOkH9zEeycd-PD-JGeXg" name="StartServiceRegistry"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_QWr30Jl3Eey_W57nfRgY1A" name="getConfig"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="_K5_1gH90Eeycd-PD-JGeXg" name="functions.go">
       <ownedAttribute xmi:type="uml:Property" xmi:id="_UbKbAH96Eeycd-PD-JGeXg" name="Property10"/>
@@ -186,7 +188,7 @@
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_w3mb4H95Eeycd-PD-JGeXg" name="dsn String"/>
       </ownedOperation>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_WvuGUH90Eeycd-PD-JGeXg" name="Query" isQuery="true">
-        <ownedParameter xmi:type="uml:Parameter" xmi:id="_geZDsH93Eeycd-PD-JGeXg" name="ServiceQueryForm" isOrdered="true" isUnique="false"/>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_VoMYQJl4Eey_W57nfRgY1A" name="message String, err error"/>
       </ownedOperation>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_Yd77oH90Eeycd-PD-JGeXg" name="Save">
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_FZ67UH94Eeycd-PD-JGeXg" name="ServiceRegistryEntryInput" isUnique="false"/>
@@ -206,6 +208,40 @@
       <ownedOperation xmi:type="uml:Operation" xmi:id="_liXbQH90Eeycd-PD-JGeXg" name="getMetadataByID">
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_xBcw4H94Eeycd-PD-JGeXg" name="id int64"/>
       </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_dhw8kJl4Eey_W57nfRgY1A" name="Query">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_oNTSMJl4Eey_W57nfRgY1A" name="ServiceQueryForm"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_p1ibUJl4Eey_W57nfRgY1A" name="updateService">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_p1ibUZl4Eey_W57nfRgY1A" name="ServiceRegistryEntryInput" isUnique="false"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_xV7DkJl4Eey_W57nfRgY1A" name="GetCountUniqueURI">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_3rKHUJl4Eey_W57nfRgY1A" name="serviceURI string"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_4wTxgJl4Eey_W57nfRgY1A" name="GetCountUpdate">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_-ZUBYJl4Eey_W57nfRgY1A" name="servicedef string, serviceURI"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_DMkVAJl5Eey_W57nfRgY1A" name="metadataRequirementFilter">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_If7FAJl5Eey_W57nfRgY1A" name="serviceQueryForm "/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_ND2jMJl5Eey_W57nfRgY1A" name="getServiceByID">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_RPgrUJl5Eey_W57nfRgY1A" name="id int64"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_W_MK8Jl5Eey_W57nfRgY1A" name="deleteByID">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_aRUDAJl5Eey_W57nfRgY1A" name="id int"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_ark9IJl5Eey_W57nfRgY1A" name="cleanPastValidityDate"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_zAaaAJl5Eey_W57nfRgY1A" name="validityCheck">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_4fkKUJl5Eey_W57nfRgY1A" name="timeString string"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_5O4HYJl5Eey_W57nfRgY1A" name="startValidityTimer">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_9QSHUJl5Eey_W57nfRgY1A" name="minutes int"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_9tgO0Jl5Eey_W57nfRgY1A" name="convertToArrayFromStruct">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Ew_fsJl6Eey_W57nfRgY1A" name="metadataJava"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_FOvysJl6Eey_W57nfRgY1A" name="convertToStructFromArray">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_JzcF4Jl6Eey_W57nfRgY1A" name="metadata []string"/>
+      </ownedOperation>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="_qOH_wH90Eeycd-PD-JGeXg" name="JSONForms">
       <ownedAttribute xmi:type="uml:Property" xmi:id="_L6Wp0H91Eeycd-PD-JGeXg" name="ServiceDefinition" visibility="public"/>
@@ -215,22 +251,22 @@
       <ownedAttribute xmi:type="uml:Property" xmi:id="_VZT3kH91Eeycd-PD-JGeXg" name="ServiceRegistryEntryOutput" visibility="public"/>
       <ownedAttribute xmi:type="uml:Property" xmi:id="_jibHUH91Eeycd-PD-JGeXg" name="ServiceQueryForm" visibility="public"/>
       <ownedAttribute xmi:type="uml:Property" xmi:id="_mx5UAH91Eeycd-PD-JGeXg" name="ServiceQueryList" visibility="public"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_ssJKIJl6Eey_W57nfRgY1A" name="MetaDataJava" visibility="public"/>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_qOH_wX90Eeycd-PD-JGeXg" name="main"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="_1zY9QH91Eeycd-PD-JGeXg" name="ServiceController">
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_LUtJoH92Eeycd-PD-JGeXg" name="JsonFile" visibility="public"/>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_1zY9QX91Eeycd-PD-JGeXg" name="main"/>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_8lDeUH91Eeycd-PD-JGeXg" name="Echo">
-        <ownedParameter xmi:type="uml:Parameter" xmi:id="_CGg0YH95Eeycd-PD-JGeXg" name="JsonFile" isUnique="false"/>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_2w9lYJl3Eey_W57nfRgY1A" name="c *nano.Context"/>
       </ownedOperation>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_8zs-UH91Eeycd-PD-JGeXg" name="Store">
-        <ownedParameter xmi:type="uml:Parameter" xmi:id="_FCmyEH95Eeycd-PD-JGeXg" name="JsonFile"/>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_8fFl0Jl3Eey_W57nfRgY1A" name="c *nano.Context"/>
       </ownedOperation>
-      <ownedOperation xmi:type="uml:Operation" xmi:id="_9DxaoH91Eeycd-PD-JGeXg" name="Query">
-        <ownedParameter xmi:type="uml:Parameter" xmi:id="_GpgecH95Eeycd-PD-JGeXg" name="JsonFile"/>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_9DxaoH91Eeycd-PD-JGeXg" name="Query" visibility="public">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_A-MOYJl4Eey_W57nfRgY1A" name="c *nano.Context"/>
       </ownedOperation>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_9VmKcH91Eeycd-PD-JGeXg" name="Unregister">
-        <ownedParameter xmi:type="uml:Parameter" xmi:id="_I0TiEH95Eeycd-PD-JGeXg" name="JsonFile"/>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_DnE8MJl4Eey_W57nfRgY1A" name="c *nano.Context"/>
       </ownedOperation>
     </packagedElement>
     <packagedElement xmi:type="uml:Dependency" xmi:id="_a-hXIH92Eeycd-PD-JGeXg" client="_5WHIAH9zEeycd-PD-JGeXg" supplier="_1zY9QH91Eeycd-PD-JGeXg"/>
@@ -273,6 +309,11 @@
     </packagedElement>
     <packagedElement xmi:type="uml:UseCase" xmi:id="_qUbicH98Eeycd-PD-JGeXg" name="Authorization"/>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_N1gNIJl6Eey_W57nfRgY1A" name="starter.go">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_N1gNIZl6Eey_W57nfRgY1A" name="main"/>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_UWvFgJl6Eey_W57nfRgY1A" name="main"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Dependency" xmi:id="_flljkJl6Eey_W57nfRgY1A" client="_N1gNIJl6Eey_W57nfRgY1A" supplier="_5WHIAH9zEeycd-PD-JGeXg"/>
   <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_NIptIFrPEeykDs0sggZmCw">
     <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_NIswcFrPEeykDs0sggZmCw" source="http://www.eclipse.org/uml2/2.0.0/UML">
       <references xmi:type="ecore:EPackage" href="pathmap://PAPYRUS_ACTIONLANGUAGE_PROFILE/ActionLanguage-Profile.profile.uml#_Kv8EIKFXEeS_KNX0nfvIVQ"/>
