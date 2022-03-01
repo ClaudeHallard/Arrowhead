@@ -1,10 +1,20 @@
+/*
+**********************************************
+@authors:
+Ivar Grunaeu, ivagru-9@student.ltu.se
+Jean-Claude Hallard, jeahal-8@student.ltu.se
+Marcus Paulsson, marpau-8@student.ltu.se
+Pontus Schünemann, ponsch-9@student.ltu.se
+Fabian Widell, fabwid-9@student.ltu.se
+
+**********************************************
+JSONForms.go contains all the shared structs that contains all the data variables for the json forms */
+
 package ServiceRegistry
 
-//Shared Structs
-
-//Metadata scruct, used by
-//ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
-// ServiceQueryForm and ServiceQueryList.
+/*Metadata scruct for the json field containing java variables, used by
+ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
+ServiceQueryForm and ServiceQueryList. */
 type MetadataJava struct {
 	AdditionalProp1 string `json:"additionalProp1"`
 	AdditionalProp2 string `json:"additionalProp2"`
@@ -64,7 +74,7 @@ type ServiceRegistryEntryOutput struct {
 	MetadataGo        []string          `json:"metadataGo"`
 	MetadataJava      MetadataJava      `json:"metadata"`
 	Version           int               `json:"version"`
-	Interfaces        []Interface       `json:"interfaces"` //I think this is how it's implemented -Ivar (should result in an array of interfaces.)
+	Interfaces        []Interface       `json:"interfaces"`
 	CreatedAt         string            `json:"createdAt"`
 	UpdatedAt         string            `json:"updatedAt"`
 }
@@ -82,7 +92,7 @@ type ServiceQueryForm struct {
 	PingProviders                bool         `json:"pingProviders"`
 }
 
-//ServiceQueryList
+//ServiceQueryList contains a list of returned services
 type ServiceQueryList struct {
 	ServiceQueryData []ServiceRegistryEntryOutput `json:"serviceQueryData"`
 	UnfilteredHits   int                          `json:"unfilteredHits"`
