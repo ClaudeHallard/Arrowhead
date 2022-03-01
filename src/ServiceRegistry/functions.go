@@ -2,7 +2,7 @@
 **********************************************
 @authors:
 Ivar Grunaeu, ivagru-9@student.ltu.se
-Jean-Claude, Hallard jeahal-8@student.ltu.se
+Jean-Claude Hallard, jeahal-8@student.ltu.se
 Marcus Paulsson, marpau-8@student.ltu.se
 Pontus Schünemann, ponsch-9@student.ltu.se
 Fabian Widell, fabwid-9@student.ltu.se
@@ -24,7 +24,7 @@ import (
 
 var db *sql.DB
 
-// OpenDatabase establishing a connecttion to the specified database file.
+// OpenDatabase establishing the connection to the specified database file.
 func OpenDatabase() {
 
 	var err error
@@ -89,33 +89,35 @@ func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOut
 	return &getServiceByID(cnt)[0]
 }
 
-// Check for serviceURI AND / OR serviceDefinition
-func GetCountUniqueURI(servicedef string, serviceURI string) int {
+// Check for serviceURI AND serviceDefinition, if a postive value is returned it means
+// a similar service exist in the service registry.
+func GetCountUniqueURI(serviceURI string) int {
 	var cnt int
-	row, err := db.Query(`select count(*) from Services where serviceDefinition= ? AND serviceURI = ?`, servicedef, serviceURI)
-	defer row.Close()
+	row, err := db.Query(`select * from Services where serviceURI= ?`, serviceURI)
 	row.Scan(&cnt)
 	if err != nil {
 		panic("Encounterd an error during GetCountUniqueURI" + err.Error())
 	}
+	defer row.Close()
+
 	return cnt
 }
 
-// check for serviceURI AND / OR serviceDefinition
+// Check for serviceURI AND serviceDefinition if the service shall be updated.
 func GetCountUpdate(servicedef string, serviceURI string) int {
-
 	var cnt int
 	row, err := db.Query(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef)
-	defer row.Close()
+
 	row.Scan(&cnt)
 	if err != nil {
 		panic("Encounterd an error during GetCountUpdate" + err.Error())
 	}
-
+	defer row.Close()
 	return cnt
 }
 
-// function to store the register input
+// function to store the register input into the database, returns the confirmation form if
+// it succeeded and a null value if it didnt.
 func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 	if !validityCheck(model.EndOfvalidity) {
@@ -126,16 +128,16 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		model.MetadataGo = convertToArrayFromStruct(model.MetadataJava)
 	}
 
-	// check if the service exist
-	if GetCountUniqueURI(model.ServiceDefinition, model.ServiceUri) > 0 {
+	// check if the service exist in database
+	if GetCountUniqueURI(model.ServiceUri) > 0 {
 		if GetCountUpdate(model.ServiceDefinition, model.ServiceUri) > 0 {
 			println("Register worked, service updated")
-			return model.updateService() // update the service in the database
+			return model.updateService() // updates the service in the database
 
 		}
 		return nil
 
-	} else {
+	} else { // create service if it not exist.
 
 		stmt, err := db.Prepare("INSERT INTO Services (serviceDefinition, systemName, address, port, authenticationInfo, serviceURI, endOfValidity, secure, version, createdAt, updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
 
@@ -150,6 +152,8 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		lastId, err := res.LastInsertId()
 
 		handleError("failed to store: %v", err)
+
+		//loop through the metadata array and add them to the table.
 		for _, v := range model.MetadataGo {
 			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
 			if err != nil {
@@ -158,7 +162,6 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			}
 			_, err = stmt.Exec(lastId, v)
 			stmt.Close()
-
 		}
 
 		//loop through the interfaces array and add them to the table.
@@ -172,6 +175,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		handleError("failed to store: %v", err)
 		println("Register worked")
 
+		// setup the return form with all the params if registration succeeded.
 		returnForm := ServiceRegistryEntryOutput{
 			ID: int(lastId),
 			ServiceDefinition: ServiceDefinition{
@@ -208,17 +212,14 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			}
 		}
 		returnForm.Interfaces = interfaceArray
-		//println(len(model.MetadataGo))
 		returnForm.MetadataJava = convertToStructFromArray(returnForm.MetadataGo)
 
 		return &returnForm
-
-		//return &getServiceByID(lastId)[0]
 	}
-	//return nil
+
 }
 
-// Function to delete a service and the assosiated data
+// Function to delete a service and the assosiated data.
 func (model *ServiceRegistryEntryInput) Delete() bool {
 
 	stmt, err := db.Prepare("DELETE FROM Services WHERE serviceDefinition = ? AND systemName = ? AND  address = ? AND port = ?")
@@ -235,6 +236,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	}
 	return false
 }
+
 func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 	var queryHits []ServiceRegistryEntryOutput
 
