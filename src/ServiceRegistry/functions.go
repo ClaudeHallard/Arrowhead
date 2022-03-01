@@ -115,7 +115,7 @@ func GetCountUpdate(servicedef string, serviceURI string) int {
 	return cnt
 }
 
-// function to store the register input into the database, returns the confirmation form if
+// Function to store the register input into the database, returns the confirmation form if
 // it succeeded and a null value if it didnt.
 func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
@@ -152,7 +152,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 
 		handleError("failed to store: %v", err)
 
-		//loop through the metadata array and add them to the table.
+		// Loop through the metadata array and add them to the table.
 		for _, v := range model.MetadataGo {
 			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
 			if err != nil {
@@ -163,7 +163,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			stmt.Close()
 		}
 
-		//loop through the interfaces array and add them to the table.
+		// Loop through the interfaces array and add them to the table.
 		for _, v := range model.Interfaces {
 			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
 			handleError("could prepare statement: %v", err)
@@ -174,7 +174,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		handleError("failed to store: %v", err)
 		println("Register worked")
 
-		// setup the return form with all the params if registration succeeded.
+		// Setup the return form with all the params if registration succeeded.
 		returnForm := ServiceRegistryEntryOutput{
 			ID: int(lastId),
 			ServiceDefinition: ServiceDefinition{
@@ -236,6 +236,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	return false
 }
 
+// Function to extract values from the database depending on specific query parameters and bind them to a
 func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 	var queryHits []ServiceRegistryEntryOutput
 	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
@@ -279,6 +280,7 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 
 }
 
+// Function that binds services corresponding to the specific metadata variables in the form.
 func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQueryForm ServiceQueryForm) {
 	var metadataHits []ServiceRegistryEntryOutput
 	for _, service := range serviceQueryList.ServiceQueryData {
@@ -298,8 +300,8 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 	return
 }
 
-//Function to get a specific or all services
-func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then all services will be retured
+//Function to get a specific or all services depending id number in database, if id <= 0 then all services will be retured
+func getServiceByID(id int64) []ServiceRegistryEntryOutput { //
 	//var err error
 
 	var serviceList []ServiceRegistryEntryOutput
@@ -355,7 +357,7 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //If id <= 0 then a
 	return serviceList
 }
 
-//Function to get a specific or all interfaces
+//Function to get a specific or all interfaces corresponding to an id in the database.
 func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces will be retured
 
 	var interfaces []Interface
@@ -387,7 +389,7 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 	return interfaces
 }
 
-//Function to get a specific or all metadata
+//Function to get a specific or all metadata corresponding to an id in the database.
 func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadata will be retured
 	var serviceID []int
 	var metaData []string
@@ -422,6 +424,8 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 
 	return serviceID, metaData
 }
+
+// Helper function to delete service for the validity check.
 func deleteByID(id int) {
 
 	stmt, err := db.Prepare("DELETE FROM Services WHERE id = ?")
@@ -430,8 +434,9 @@ func deleteByID(id int) {
 	stmt.Close()
 
 	handleError("delete failed: %v", err)
-
 }
+
+// Function to remove/unregister outdated service from the database.
 func cleanPastValidityDate() {
 	fmt.Println("Preforming endOfValidity Cleaning")
 	var pastValidityServices []int
@@ -474,7 +479,7 @@ func validityCheck(timeString string) bool {
 
 }
 
-//ticker for the time between validity cleaning
+// Function to set a ticker frequence for the time between validity cleaning
 func startValidityTimer(minutes int) {
 	cleanPastValidityDate()
 	fmt.Printf("Clean delay set to: %d minutes\n", minutes)
@@ -484,22 +489,23 @@ func startValidityTimer(minutes int) {
 		cleanPastValidityDate()
 	}
 }
+
+// Function to create an array for data from a metadata struct.
 func convertToArrayFromStruct(metadataJava MetadataJava) []string {
 	var stringArr []string
-
 	if metadataJava.AdditionalProp1 != "" {
 		stringArr = append(stringArr, metadataJava.AdditionalProp1)
 	}
-
 	if metadataJava.AdditionalProp2 != "" {
 		stringArr = append(stringArr, metadataJava.AdditionalProp2)
 	}
 	if metadataJava.AdditionalProp3 != "" {
 		stringArr = append(stringArr, metadataJava.AdditionalProp3)
 	}
-
 	return stringArr
 }
+
+// Function to create a struct from data stored in an array.
 func convertToStructFromArray(metadata []string) MetadataJava {
 	metadataJava := MetadataJava{}
 
@@ -513,5 +519,4 @@ func convertToStructFromArray(metadata []string) MetadataJava {
 		metadataJava.AdditionalProp3 = metadata[2]
 	}
 	return metadataJava
-
 }
