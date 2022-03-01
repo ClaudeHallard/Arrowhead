@@ -55,7 +55,6 @@ func (model *ServiceQueryForm) Query() *ServiceQueryList {
 	serviceQueryList.ServiceDefenitionFilter(*model)
 
 	if len(model.MetadataRequirementsGo) > 0 {
-
 		serviceQueryList.metadataRequiermentFilter(*model)
 	}
 	for i := 0; i < len(serviceQueryList.ServiceQueryData); i++ {
@@ -239,14 +238,15 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 
 func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 	var queryHits []ServiceRegistryEntryOutput
-
 	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
 	rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
+
 	for rows.Next() {
 		var service ServiceRegistryEntryOutput
+
 		err := rows.Scan(&service.ID, &service.ServiceDefinition.ServiceDefinition, &service.ServiceDefinition.CreatedAt, &service.ServiceDefinition.UpdatedAt,
 			&service.Provider.SystemName, &service.Provider.Address, &service.Provider.Port, &service.Provider.AuthenticationInfo, &service.Provider.CreatedAt, &service.Provider.UpdatedAt,
 			&service.ServiceUri, &service.EndOfValidity, &service.Secure, &service.Version, &service.CreatedAt, &service.UpdatedAt)
@@ -265,11 +265,13 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 	defer rows.Close()
 
 	for i := 0; i < len(queryHits); i++ {
+
 		queryHits[i].Interfaces = getInterfaceByID(int64(queryHits[i].ID))
 		_, queryHits[i].MetadataGo = getMetadataByID(int64(queryHits[i].ID))
 	}
 
-	println(len(queryHits[0].MetadataGo))
+	//println(len(queryHits[0].MetadataGo))
+
 	serviceQueryList.ServiceQueryData = queryHits
 	serviceQueryList.UnfilteredHits = len(queryHits)
 
@@ -484,15 +486,18 @@ func startValidityTimer(minutes int) {
 }
 func convertToArrayFromStruct(metadataJava MetadataJava) []string {
 	var stringArr []string
+
 	if metadataJava.AdditionalProp1 != "" {
 		stringArr = append(stringArr, metadataJava.AdditionalProp1)
 	}
+
 	if metadataJava.AdditionalProp2 != "" {
 		stringArr = append(stringArr, metadataJava.AdditionalProp2)
 	}
 	if metadataJava.AdditionalProp3 != "" {
 		stringArr = append(stringArr, metadataJava.AdditionalProp3)
 	}
+
 	return stringArr
 }
 func convertToStructFromArray(metadata []string) MetadataJava {

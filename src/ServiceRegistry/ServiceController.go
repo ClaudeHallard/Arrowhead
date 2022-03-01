@@ -2,7 +2,7 @@
 **********************************************
 @authors:
 Ivar Grunaeu, ivagru-9@student.ltu.se
-Jean-Claude, Hallard jeahal-8@student.ltu.se
+Jean-Claude Hallard, jeahal-8@student.ltu.se
 Marcus Paulsson, marpau-8@student.ltu.se
 Pontus Schünemann, ponsch-9@student.ltu.se
 Fabian Widell, fabwid-9@student.ltu.se
@@ -51,10 +51,8 @@ func Store(c *nano.Context) {
 /* Query search for the wanted service and returns a query list containing corresponding services.
 (route: POST serviceregistry/query) */
 func Query(c *nano.Context) {
-
 	serviceQueryForm := ServiceQueryForm{}
 	c.BindJSON(&serviceQueryForm)
-
 	respForm := serviceQueryForm.Query()
 	c.JSON(http.StatusOK, respForm)
 	println("query worked")
