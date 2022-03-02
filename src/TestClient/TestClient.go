@@ -12,37 +12,37 @@ import (
 )
 
 func main() {
-	java = true //Set to true for java version
-	goLocalhost = false
+	java = false //Set to true for java version
+	goLocalhost = true
+	printResponsAndRequest = true
+	//preformTests("echo", 1, 1)
+	//preformTests("register", 1, 1)
+	//preformTests("query", 1, 1) //preforms  querys
+	preformTests("unregister", 5000, 1)
 
 	//HeavyTest("register", 1000)
 
-	//preformTests("register", 1, 1)
-	//preformTests("query", 1, 1) //preforms 100 querys
-	//preformTests("unregister", 5000, 1)
+	/*
+		amount := 1000
+		start := 1
 
-	amount := 1000
-	start := 1
+		java = false //Set to true for java version
+		println("Golang")
+		testGoA := preformTestAll(amount, start)
 
-	java = false //Set to true for java version
-	println("Golang")
-	testGoA := preformTestAll(amount, start)
+		java = true
+		println("Java")
+		testJava := preformTestAll(amount, start)
 
-	java = true
-	println("Java")
-	testJava := preformTestAll(amount, start)
-
-	testGoA.printResults()
-
-	testJava.printResults()
-	fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
-
-	//go preformTestAll(amount, start).printResults()
-
+		testGoA.printResults()
+		testJava.printResults()
+		fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
+	*/
 }
 
 var java bool //Set to true to convert from metadata array to struct
 var goLocalhost bool
+var printResponsAndRequest bool
 
 // Preform amount test on 5 go routines
 func HeavyTest(testType string, amount int) {
@@ -79,10 +79,20 @@ func SendRequest(req *http.Request) ([]byte, testData) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-	//println("Respons: " + string(body))
 	if err != nil {
 
 		panic("Failed to read response")
+	}
+	if printResponsAndRequest {
+
+		if req.Body != nil {
+			buf := new(bytes.Buffer)
+			reqBody, _ := req.GetBody()
+			buf.ReadFrom(reqBody)
+			println("Sending: " + buf.String())
+		}
+
+		println("Respons: " + string(body))
 	}
 	// Output: Hello
 	return body, tD
@@ -91,18 +101,16 @@ func preformTests(testType string, amount int, start int) (time.Duration, int) {
 	var totalTime time.Duration
 	var address string
 	if java {
-		address = "31.208.108.251:42454"
+		address = "31.208.108.251:42454" //java version
 	} else {
 		if goLocalhost {
-			address = "localhost:4245"
+			address = "localhost:4245" //golang localversion
 		} else {
-			address = "31.208.108.251:4245"
+			address = "31.208.108.251:4245" //golang pi version
 		}
 
 	}
-	//address := "31.208.108.251:42454" //java version
-	//address = "31.208.108.251:4245" //golang version
-	//address := "localhost:4245" //golang version
+
 	successCount := 0
 	switch typeSwitch := testType; typeSwitch {
 	case "query":
@@ -110,7 +118,7 @@ func preformTests(testType string, amount int, start int) (time.Duration, int) {
 		for i := 0; i < amount; i++ {
 
 			//totalTime = totalTime + tD.elapsedTime
-			_, tD := SendRequest(createQueryRequest(start, address))
+			_, tD := SendRequest(createQueryRequest(start+amount-1, address))
 			totalTime = totalTime + tD.elapsedTime
 			fmt.Printf("#%d   			Status: %s   			Time %s\n", i, tD.status, tD.elapsedTime)
 			if strings.Contains(tD.status, "200") {
@@ -196,7 +204,6 @@ func createRegisterRequest(i int, address string) *http.Request {
 		},
 	}
 	body, _ := json.Marshal(serviceRegistryEntry)
-	//println("Sending: " + string(body))
 	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/register", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
@@ -208,19 +215,19 @@ func createRegisterRequest(i int, address string) *http.Request {
 }
 func createQueryRequest(i int, address string) *http.Request {
 	serviceQueryForm := ServiceQueryForm{
-		//ServiceDefinitionRequirement: "TestSD" + strconv.Itoa(i),
-		ServiceDefinitionRequirement: "TestSD101",
-		InterfaceRequirements:        []string{},
-		SecurityRequirements:         []string{},
-		MetadataRequirementsGo:       []string{},
-		MetadataRequirementsJava:     MetadataJava{},
-		VersionRequirements:          0,
-		MaxVersionRequirements:       0,
-		MinVersionRequirements:       0,
-		PingProviders:                false,
+		ServiceDefinitionRequirement: "TestSD" + strconv.Itoa(i),
+		//ServiceDefinitionRequirement: "TestSD",
+		InterfaceRequirements:    []string{},
+		SecurityRequirements:     []string{},
+		MetadataRequirementsGo:   []string{},
+		MetadataRequirementsJava: MetadataJava{},
+		VersionRequirements:      0,
+		MaxVersionRequirements:   0,
+		MinVersionRequirements:   0,
+		PingProviders:            false,
 	}
 	body, _ := json.Marshal(serviceQueryForm)
-	//println("Sending: " + string(body))
+
 	req, err := http.NewRequest("POST", "http://"+address+"/serviceregistry/query", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
@@ -240,12 +247,6 @@ func createUnregisterRequest(i int, address string) *http.Request {
 	q.Add("system_name", "string")
 	req.URL.RawQuery = q.Encode()
 
-	//fmt.Println(req.URL.String())
-
-	//client := &http.Client{}
-	//println(r.Header)
-	//resp, _ := client.Do(req)
-	//fmt.Println(resp.Status)
 	return req
 }
 

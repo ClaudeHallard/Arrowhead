@@ -72,7 +72,7 @@ func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOut
 
 	currentTime := time.Now().Format("2006-01-02T15:04:051Z")
 	_, err = stmt.Exec(model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.EndOfvalidity, model.Secure, model.Version, currentTime, model.ServiceDefinition, model.ServiceUri)
-	stmt.Close()
+	defer stmt.Close()
 	if err != nil {
 		println(err.Error())
 		panic("Encounterd an error during registration while inserting service, (updateService)")
@@ -80,7 +80,7 @@ func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOut
 
 	var cnt int64
 	row, err := db.Query(`select id from Services where serviceURI = ?`, model.ServiceUri)
-	row.Close()
+	defer row.Close()
 	if err != nil {
 		panic("Encounterd an error during updateService" + err.Error())
 	}
@@ -93,11 +93,11 @@ func (model *ServiceRegistryEntryInput) updateService() *ServiceRegistryEntryOut
 func GetCountUniqueURI(serviceURI string) int {
 	var cnt int
 	row, err := db.Query(`select * from Services where serviceURI= ?`, serviceURI)
+	defer row.Close()
 	row.Scan(&cnt)
 	if err != nil {
 		panic("Encounterd an error during GetCountUniqueURI" + err.Error())
 	}
-	defer row.Close()
 
 	return cnt
 }
@@ -106,12 +106,11 @@ func GetCountUniqueURI(serviceURI string) int {
 func GetCountUpdate(servicedef string, serviceURI string) int {
 	var cnt int
 	row, err := db.Query(`select count(*) from Services where serviceURI = ? AND serviceDefinition = ?`, serviceURI, servicedef)
-
+	defer row.Close()
 	row.Scan(&cnt)
 	if err != nil {
 		panic("Encounterd an error during GetCountUpdate" + err.Error())
 	}
-	defer row.Close()
 	return cnt
 }
 
@@ -123,7 +122,6 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		return nil
 	}
 	if len(model.MetadataGo) == 0 {
-		println("converting")
 		model.MetadataGo = convertToArrayFromStruct(model.MetadataJava)
 	}
 
@@ -143,7 +141,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		currentTime := time.Now().Format("2006-01-02T15:04:05.000Z")
 
 		res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port, model.ProviderSystem.AuthenticationInfo, model.ServiceUri, model.EndOfvalidity, model.Secure, model.Version, currentTime, currentTime)
-		stmt.Close()
+		defer stmt.Close()
 		if err != nil {
 			println(err.Error())
 			panic("Encounterd an error during registration while inserting service, (Save)")
@@ -160,7 +158,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 				panic("Encounterd an error during registration while inserting metadata")
 			}
 			_, err = stmt.Exec(lastId, v)
-			stmt.Close()
+			defer stmt.Close()
 		}
 
 		// Loop through the interfaces array and add them to the table.
@@ -168,7 +166,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			stmt, err := db.Prepare("INSERT INTO Interfaces (serviceID, interfaceName, createdAt, updatedAt) VALUES (?,?,?,?)")
 			handleError("could prepare statement: %v", err)
 			_, err = stmt.Exec(lastId, v, currentTime, currentTime)
-			stmt.Close()
+			defer stmt.Close()
 		}
 
 		handleError("failed to store: %v", err)
@@ -224,7 +222,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 	stmt, err := db.Prepare("DELETE FROM Services WHERE serviceDefinition = ? AND systemName = ? AND  address = ? AND port = ?")
 	handleError("could not prepare statement: %v", err)
 	res, err := stmt.Exec(model.ServiceDefinition, model.ProviderSystem.SystemName, model.ProviderSystem.Address, model.ProviderSystem.Port)
-	stmt.Close()
+	defer stmt.Close()
 	handleError("query failed: %v", err)
 	affecteds, err := res.RowsAffected()
 	handleError("could not get affected rows: %v", err)
@@ -239,15 +237,16 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 // Function to extract values from the database depending on specific query parameters and bind them to a
 func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 	var queryHits []ServiceRegistryEntryOutput
+	println(serviceQueryForm.ServiceDefinitionRequirement)
 	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
-	rows.Close()
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
 
 	for rows.Next() {
 		var service ServiceRegistryEntryOutput
-
+		println("test")
 		err := rows.Scan(&service.ID, &service.ServiceDefinition.ServiceDefinition, &service.ServiceDefinition.CreatedAt, &service.ServiceDefinition.UpdatedAt,
 			&service.Provider.SystemName, &service.Provider.Address, &service.Provider.Port, &service.Provider.AuthenticationInfo, &service.Provider.CreatedAt, &service.Provider.UpdatedAt,
 			&service.ServiceUri, &service.EndOfValidity, &service.Secure, &service.Version, &service.CreatedAt, &service.UpdatedAt)
@@ -263,15 +262,12 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 		}
 
 	}
-	defer rows.Close()
 
 	for i := 0; i < len(queryHits); i++ {
 
 		queryHits[i].Interfaces = getInterfaceByID(int64(queryHits[i].ID))
 		_, queryHits[i].MetadataGo = getMetadataByID(int64(queryHits[i].ID))
 	}
-
-	//println(len(queryHits[0].MetadataGo))
 
 	serviceQueryList.ServiceQueryData = queryHits
 	serviceQueryList.UnfilteredHits = len(queryHits)
@@ -315,8 +311,10 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //
 	var err error
 	if 0 <= id {
 		rows, err = db.Query("SELECT * FROM Services WHERE id=?", id)
+		defer rows.Close()
 	} else {
 		rows, err = db.Query("SELECT * FROM Services")
+		defer rows.Close()
 	}
 
 	//Get the services and add metadata and interfaces to their corresponding service
@@ -352,8 +350,6 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //
 
 	}
 
-	defer rows.Close()
-
 	return serviceList
 }
 
@@ -365,10 +361,10 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 	var err error
 	if 0 <= id {
 		rows, err = db.Query("SELECT serviceID, interfaceName, createdAt, updatedAt FROM Interfaces WHERE serviceID = ?", id)
-		rows.Close()
+		defer rows.Close()
 	} else {
 		rows, err = db.Query("SELECT serviceID, interfaceName, createdAt, updatedAt FROM Interfaces")
-		rows.Close()
+		defer rows.Close()
 	}
 
 	//rows, err := db.Query("SELECT serviceID, interfaceName, createdAt, updatedAt FROM Interfaces WHERE serviceID = ?", id)
@@ -384,8 +380,6 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 
 	}
 
-	defer rows.Close()
-
 	return interfaces
 }
 
@@ -398,10 +392,10 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 
 	if 0 <= id {
 		rows, err = db.Query("SELECT serviceID, metaData  FROM MetaData WHERE serviceID = ?", id)
-		rows.Close()
+		defer rows.Close()
 	} else {
 		rows, err = db.Query("SELECT serviceID, metaData  FROM MetaData")
-		rows.Close()
+		defer rows.Close()
 	}
 
 	handleError("query failed: %v", err)
@@ -420,7 +414,6 @@ func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadat
 		metaData = append(metaData, mData)
 
 	}
-	defer rows.Close()
 
 	return serviceID, metaData
 }
@@ -431,7 +424,7 @@ func deleteByID(id int) {
 	stmt, err := db.Prepare("DELETE FROM Services WHERE id = ?")
 	handleError("could not prepare statement: %v", err)
 	_, err = stmt.Exec(id)
-	stmt.Close()
+	defer stmt.Close()
 
 	handleError("delete failed: %v", err)
 }
@@ -444,7 +437,7 @@ func cleanPastValidityDate() {
 	var endOfValidity string
 
 	rows, err := db.Query("SELECT id, endOfValidity FROM Services")
-	rows.Close()
+	defer rows.Close()
 	if err != nil {
 
 		panic(err.Error())
@@ -461,7 +454,6 @@ func cleanPastValidityDate() {
 			pastValidityServices = append(pastValidityServices, id)
 		}
 	}
-	defer rows.Close()
 	for _, v := range pastValidityServices {
 
 		fmt.Printf("Removing service with ID: %d, the endOfValidity is not valid\n", v)
