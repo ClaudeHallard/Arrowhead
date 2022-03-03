@@ -17,27 +17,28 @@ func main() {
 	printResponsAndRequest = true
 	//preformTests("echo", 1, 1)
 	//preformTests("register", 1, 1)
-	//preformTests("query", 1, 1) //preforms  querys
-	preformTests("unregister", 5000, 1)
+	//Testmap2()
+	//preformTests("query", 1, 2) //preforms  querys
+	//preformTests("unregister", 1, 1)
 
 	//HeavyTest("register", 1000)
 
-	/*
-		amount := 1000
-		start := 1
+	amount := 1
+	start := 1
 
-		java = false //Set to true for java version
-		println("Golang")
-		testGoA := preformTestAll(amount, start)
+	java = false //Set to true for java version
+	println("Golang")
+	testGoA := preformTestAll(amount, start)
 
-		java = true
-		println("Java")
-		testJava := preformTestAll(amount, start)
+	java = true
+	println("Java")
+	testJava := preformTestAll(amount, start)
 
-		testGoA.printResults()
-		testJava.printResults()
-		fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
-	*/
+	testGoA.printResults()
+
+	testJava.printResults()
+	//fmt.Printf("Total Difference: %s\n", testGoA.totalTime-testJava.totalTime)
+
 }
 
 var java bool //Set to true to convert from metadata array to struct
@@ -186,18 +187,14 @@ func createRegisterRequest(i int, address string) *http.Request {
 		//EndOfvalidity: "2002-04-14T11:07:36.639Z", // test for an invalid date
 		Secure: "NOT_SECURE",
 
-		MetadataJava: MetadataJava{
-			AdditionalProp1: "metadata1",
-			AdditionalProp2: "metadata3",
-			AdditionalProp3: "metadata3",
-		},
-
-		MetadataGo: []string{
-			"metadata1",
-			"metadata2",
-			"metadata3",
-		},
-
+		MetadataJava: map[string]string{"AAA": "aaa", "BBB": "bbb", "CCC": "ccc", "DDD": "ddd"},
+		/*
+			MetadataGo: []string{
+				"metadata1",
+				"metadata2",
+				"metadata3",
+			},
+		*/
 		Version: 0,
 		Interfaces: []string{
 			"HTTP-SECURE-JSON",
@@ -216,15 +213,17 @@ func createRegisterRequest(i int, address string) *http.Request {
 func createQueryRequest(i int, address string) *http.Request {
 	serviceQueryForm := ServiceQueryForm{
 		ServiceDefinitionRequirement: "TestSD" + strconv.Itoa(i),
-		//ServiceDefinitionRequirement: "TestSD",
-		InterfaceRequirements:    []string{},
-		SecurityRequirements:     []string{},
-		MetadataRequirementsGo:   []string{},
-		MetadataRequirementsJava: MetadataJava{},
-		VersionRequirements:      0,
-		MaxVersionRequirements:   0,
-		MinVersionRequirements:   0,
-		PingProviders:            false,
+		InterfaceRequirements:        []string{},
+		SecurityRequirements:         []string{},
+
+		//MetadataRequirementsGo: []string{"metadata1", "metadata2", "metadata3"},
+		//MetadataRequirementsGo: []string{"AAA", "BBB", "CCC", "DDD"},
+		MetadataRequirementsJava: map[string]string{"AAA": "aaa", "BBB": "bbb", "CCC": "ccc", "DDD": "ddd"},
+		//MetadataRequirementsJava: map[string]string{"metadata1": "", "metadata2": "", "metadata3": ""},
+		VersionRequirements:    0,
+		MaxVersionRequirements: 0,
+		MinVersionRequirements: 0,
+		PingProviders:          false,
 	}
 	body, _ := json.Marshal(serviceQueryForm)
 

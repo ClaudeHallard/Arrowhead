@@ -18,7 +18,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -48,17 +47,24 @@ func handleError(message string, err error) {
 
 // Query invokes checks on the query form and sends request to extract information from the database. Returns the information in a query list.
 func (model *ServiceQueryForm) Query() *ServiceQueryList {
-	if len(model.MetadataRequirementsGo) == 0 {
-		model.MetadataRequirementsGo = convertToArrayFromStruct(model.MetadataRequirementsJava)
+
+	if len(model.MetadataRequirementsGo) != 0 {
+
+		model.MetadataRequirementsJava = convertToJavaMetadata(model.MetadataRequirementsGo)
+
 	}
+
 	serviceQueryList := &ServiceQueryList{}
 	serviceQueryList.ServiceDefenitionFilter(*model)
 
-	if len(model.MetadataRequirementsGo) > 0 {
+	if int(len(model.MetadataRequirementsJava)) > 0 {
+
 		serviceQueryList.metadataRequiermentFilter(*model)
 	}
-	for i := 0; i < len(serviceQueryList.ServiceQueryData); i++ {
-		serviceQueryList.ServiceQueryData[i].MetadataJava = convertToStructFromArray(serviceQueryList.ServiceQueryData[i].MetadataGo)
+	if len(model.MetadataRequirementsGo) != 0 {
+		for i := 0; i < len(serviceQueryList.ServiceQueryData); i++ {
+			serviceQueryList.ServiceQueryData[i].MetadataGo = convertToGoMetadata(serviceQueryList.ServiceQueryData[i].MetadataJava)
+		}
 	}
 
 	return serviceQueryList
@@ -121,8 +127,8 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 	if !validityCheck(model.EndOfvalidity) {
 		return nil
 	}
-	if len(model.MetadataGo) == 0 {
-		model.MetadataGo = convertToArrayFromStruct(model.MetadataJava)
+	if len(model.MetadataGo) != 0 {
+		model.MetadataJava = convertToJavaMetadata(model.MetadataGo)
 	}
 
 	// check if the service exist in database
@@ -151,13 +157,13 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 		handleError("failed to store: %v", err)
 
 		// Loop through the metadata array and add them to the table.
-		for _, v := range model.MetadataGo {
-			stmt, err := db.Prepare("INSERT INTO MetaData (serviceID, metaData) VALUES (?,?)")
+		for key, value := range model.MetadataJava {
+			stmt, err := db.Prepare("INSERT INTO Metadata (serviceID, key, value) VALUES (?, ?, ?)")
 			if err != nil {
 				println(err.Error())
-				panic("Encounterd an error during registration while inserting metadata")
+				panic("Encounterd an error during registration while inserting Metadata")
 			}
-			_, err = stmt.Exec(lastId, v)
+			_, err = stmt.Exec(lastId, key, value)
 			defer stmt.Close()
 		}
 
@@ -194,6 +200,7 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			EndOfValidity: model.EndOfvalidity,
 			Secure:        model.Secure,
 			MetadataGo:    model.MetadataGo,
+			MetadataJava:  model.MetadataJava,
 			Version:       model.Version,
 			CreatedAt:     currentTime,
 			UpdatedAt:     currentTime,
@@ -209,7 +216,9 @@ func (model *ServiceRegistryEntryInput) Save() *ServiceRegistryEntryOutput {
 			}
 		}
 		returnForm.Interfaces = interfaceArray
-		returnForm.MetadataJava = convertToStructFromArray(returnForm.MetadataGo)
+		if len(model.MetadataGo) != 0 {
+			returnForm.MetadataJava = convertToJavaMetadata(model.MetadataGo)
+		}
 
 		return &returnForm
 	}
@@ -237,7 +246,7 @@ func (model *ServiceRegistryEntryInput) Delete() bool {
 // Function to extract values from the database depending on specific query parameters and bind them to a
 func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryForm ServiceQueryForm) {
 	var queryHits []ServiceRegistryEntryOutput
-	println(serviceQueryForm.ServiceDefinitionRequirement)
+
 	rows, err := db.Query("SELECT * FROM Services WHERE serviceDefinition LIKE ?", "%"+serviceQueryForm.ServiceDefinitionRequirement+"%")
 	defer rows.Close()
 	if err != nil {
@@ -246,7 +255,6 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 
 	for rows.Next() {
 		var service ServiceRegistryEntryOutput
-		println("test")
 		err := rows.Scan(&service.ID, &service.ServiceDefinition.ServiceDefinition, &service.ServiceDefinition.CreatedAt, &service.ServiceDefinition.UpdatedAt,
 			&service.Provider.SystemName, &service.Provider.Address, &service.Provider.Port, &service.Provider.AuthenticationInfo, &service.Provider.CreatedAt, &service.Provider.UpdatedAt,
 			&service.ServiceUri, &service.EndOfValidity, &service.Secure, &service.Version, &service.CreatedAt, &service.UpdatedAt)
@@ -265,8 +273,8 @@ func (serviceQueryList *ServiceQueryList) ServiceDefenitionFilter(serviceQueryFo
 
 	for i := 0; i < len(queryHits); i++ {
 
-		queryHits[i].Interfaces = getInterfaceByID(int64(queryHits[i].ID))
-		_, queryHits[i].MetadataGo = getMetadataByID(int64(queryHits[i].ID))
+		queryHits[i].Interfaces = getInterfaceByID(queryHits[i].ID)
+		queryHits[i].MetadataJava = getMetadataByID(queryHits[i].ID)
 	}
 
 	serviceQueryList.ServiceQueryData = queryHits
@@ -281,10 +289,11 @@ func (serviceQueryList *ServiceQueryList) metadataRequiermentFilter(serviceQuery
 	var metadataHits []ServiceRegistryEntryOutput
 	for _, service := range serviceQueryList.ServiceQueryData {
 		mdReqHit := false
-		for _, md := range service.MetadataGo {
-			for _, mdReq := range serviceQueryForm.MetadataRequirementsGo {
-				if strings.Contains(md, mdReq) {
+		for serviceMdKey, serviceMdValue := range service.MetadataJava {
+			for mdReqKey, mdReqValue := range serviceQueryForm.MetadataRequirementsJava {
+				if serviceMdKey == mdReqKey || serviceMdValue == mdReqValue {
 					mdReqHit = true
+
 				}
 			}
 		}
@@ -301,11 +310,6 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //
 	//var err error
 
 	var serviceList []ServiceRegistryEntryOutput
-	//Get the interfaces
-	var interfaces = getInterfaceByID(id)
-
-	//Get the metadata
-	var metaServiceID, metaData = getMetadataByID(id)
 
 	var rows *sql.Rows
 	var err error
@@ -333,28 +337,20 @@ func getServiceByID(id int64) []ServiceRegistryEntryOutput { //
 			panic("Encounterd an error while quering the database for services")
 		}
 		if validityCheck(service.EndOfValidity) {
-			for i := 0; i < len(metaData); i++ {
-
-				if service.ID == metaServiceID[i] {
-					service.MetadataGo = append(service.MetadataGo, metaData[i])
-				}
-			}
-			for _, v := range interfaces {
-				if service.ID == v.ID {
-					service.Interfaces = append(service.Interfaces, v)
-				}
-			}
 
 			serviceList = append(serviceList, service)
 		}
 
 	}
-
+	for _, service := range serviceList {
+		service.MetadataJava = getMetadataByID(service.ID)
+		service.Interfaces = getInterfaceByID(service.ID)
+	}
 	return serviceList
 }
 
 //Function to get a specific or all interfaces corresponding to an id in the database.
-func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces will be retured
+func getInterfaceByID(id int) []Interface { //If id <= 0  then all interfaces will be retured
 
 	var interfaces []Interface
 	var rows *sql.Rows
@@ -384,38 +380,26 @@ func getInterfaceByID(id int64) []Interface { //If id <= 0  then all interfaces 
 }
 
 //Function to get a specific or all metadata corresponding to an id in the database.
-func getMetadataByID(id int64) ([]int, []string) { //If id <= 0 then all metadata will be retured
-	var serviceID []int
-	var metaData []string
-	var rows *sql.Rows
-	var err error
+func getMetadataByID(id int) map[string]string { //If id <= 0 then all metadata will be retured
 
-	if 0 <= id {
-		rows, err = db.Query("SELECT serviceID, metaData  FROM MetaData WHERE serviceID = ?", id)
-		defer rows.Close()
-	} else {
-		rows, err = db.Query("SELECT serviceID, metaData  FROM MetaData")
-		defer rows.Close()
-	}
+	metaData := make(map[string]string)
+	var rows *sql.Rows
+
+	rows, err := db.Query("SELECT key, value  FROM Metadata WHERE serviceID = ?", id)
+	defer rows.Close()
 
 	handleError("query failed: %v", err)
 	for rows.Next() {
-		var sID int
-		var mData string
+		var key string
+		var value string
 
-		err := rows.Scan(&sID, &mData)
-
-		if err != nil {
-			println(err.Error())
-			panic("Encounterd an error while scaning database for metadata")
-		}
-
-		serviceID = append(serviceID, sID)
-		metaData = append(metaData, mData)
+		err := rows.Scan(&key, &value)
+		handleError("Encounterd an error while scaning database for metadata: %v", err)
+		metaData[key] = value
 
 	}
 
-	return serviceID, metaData
+	return metaData
 }
 
 // Helper function to delete service for the validity check.
@@ -482,33 +466,22 @@ func startValidityTimer(minutes int) {
 	}
 }
 
-// Function to create an array for data from a metadata struct.
-func convertToArrayFromStruct(metadataJava MetadataJava) []string {
-	var stringArr []string
-	if metadataJava.AdditionalProp1 != "" {
-		stringArr = append(stringArr, metadataJava.AdditionalProp1)
+// Function to get the array version of metadata
+// (used when responding to requests with a MetadataGo containing entries.)
+func convertToGoMetadata(metadata map[string]string) []string {
+	var metadataGo = []string{}
+	for key, value := range metadata {
+		metadataGo = append(metadataGo, key+"."+value)
 	}
-	if metadataJava.AdditionalProp2 != "" {
-		stringArr = append(stringArr, metadataJava.AdditionalProp2)
-	}
-	if metadataJava.AdditionalProp3 != "" {
-		stringArr = append(stringArr, metadataJava.AdditionalProp3)
-	}
-	return stringArr
+	return metadataGo
 }
 
-// Function to create a struct from data stored in an array.
-func convertToStructFromArray(metadata []string) MetadataJava {
-	metadataJava := MetadataJava{}
-
-	if len(metadata) >= 1 {
-		metadataJava.AdditionalProp1 = metadata[0]
+// Function to get the map version of metadata
+// (used when a requests with a MetadataGo contains entries.)
+func convertToJavaMetadata(metadataGo []string) map[string]string {
+	metadata := make(map[string]string)
+	for _, key := range metadataGo {
+		metadata[key] = key
 	}
-	if len(metadata) >= 2 {
-		metadataJava.AdditionalProp2 = metadata[1]
-	}
-	if len(metadata) >= 3 {
-		metadataJava.AdditionalProp3 = metadata[2]
-	}
-	return metadataJava
+	return metadata
 }

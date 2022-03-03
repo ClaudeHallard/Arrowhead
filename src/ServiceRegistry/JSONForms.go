@@ -12,15 +12,6 @@ JSONForms.go contains all the shared structs that contains all the data variable
 
 package ServiceRegistry
 
-/*Metadata scruct for the json field containing java variables, used by
-ServiceRegistryEntryInput, ServiceRegistryEntryOutput,
-ServiceQueryForm and ServiceQueryList. */
-type MetadataJava struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
-}
-
 type ServiceDefinition struct {
 	ID                int    `json:"id"`
 	ServiceDefinition string `json:"serviceDefinition"`
@@ -46,15 +37,15 @@ type Interface struct {
 
 // ServiceRegistryEntry Input Version
 type ServiceRegistryEntryInput struct {
-	ServiceDefinition string         `json:"serviceDefinition"`
-	ProviderSystem    ProviderSystem `json:"providerSystem"`
-	ServiceUri        string         `json:"serviceUri"`
-	EndOfvalidity     string         `json:"endOfValidity"`
-	Secure            string         `json:"secure"`
-	MetadataGo        []string       `json:"metadataGo"`
-	MetadataJava      MetadataJava   `json:"metadata"`
-	Version           int            `json:"version"`
-	Interfaces        []string       `json:"interfaces"`
+	ServiceDefinition string            `json:"serviceDefinition"`
+	ProviderSystem    ProviderSystem    `json:"providerSystem"`
+	ServiceUri        string            `json:"serviceUri"`
+	EndOfvalidity     string            `json:"endOfValidity"`
+	Secure            string            `json:"secure"`
+	MetadataGo        []string          `json:"metadataGo"`
+	MetadataJava      map[string]string `json:"metadata"`
+	Version           int               `json:"version"`
+	Interfaces        []string          `json:"interfaces"`
 }
 type ProviderSystem struct {
 	SystemName         string `json:"systemName"`
@@ -72,7 +63,7 @@ type ServiceRegistryEntryOutput struct {
 	EndOfValidity     string            `json:"endOfValidity"`
 	Secure            string            `json:"secure"`
 	MetadataGo        []string          `json:"metadataGo"`
-	MetadataJava      MetadataJava      `json:"metadata"`
+	MetadataJava      map[string]string `json:"metadata"`
 	Version           int               `json:"version"`
 	Interfaces        []Interface       `json:"interfaces"`
 	CreatedAt         string            `json:"createdAt"`
@@ -81,15 +72,15 @@ type ServiceRegistryEntryOutput struct {
 
 //ServiceQueryForm
 type ServiceQueryForm struct {
-	ServiceDefinitionRequirement string       `json:"serviceDefinitionRequirement"`
-	InterfaceRequirements        []string     `json:"interfaceRequirements"`
-	SecurityRequirements         []string     `json:"securityRequirements"`
-	MetadataRequirementsGo       []string     `json:"metadataRequirementsGo"`
-	MetadataRequirementsJava     MetadataJava `json:"metadataRequirements"`
-	VersionRequirements          int          `json:"versionRequirement"`
-	MaxVersionRequirements       int          `json:"maxVersionRequirement"`
-	MinVersionRequirements       int          `json:"minVersionRequirement"`
-	PingProviders                bool         `json:"pingProviders"`
+	ServiceDefinitionRequirement string            `json:"serviceDefinitionRequirement"`
+	InterfaceRequirements        []string          `json:"interfaceRequirements"`
+	SecurityRequirements         []string          `json:"securityRequirements"`
+	MetadataRequirementsGo       []string          `json:"metadataRequirementsGo"`
+	MetadataRequirementsJava     map[string]string `json:"metadata"`
+	VersionRequirements          int               `json:"versionRequirement"`
+	MaxVersionRequirements       int               `json:"maxVersionRequirement"`
+	MinVersionRequirements       int               `json:"minVersionRequirement"`
+	PingProviders                bool              `json:"pingProviders"`
 }
 
 //ServiceQueryList contains a list of returned services
